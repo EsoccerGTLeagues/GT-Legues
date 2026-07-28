@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisador de Confrontos</title>
+    <title>GT Analisador de Confrontos</title>
     <!-- Adicionando a biblioteca do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -104,7 +104,7 @@
     <img src="logo.png" alt="Logo Scanner 8 Minutos" style="width: 300px; margin-bottom: 5px;">
     <h2 style="margin-top: 5px; margin-bottom: 5px;">Acesse sua conta</h2>
     <p style="font-size: 0.9em; color: #aaa; margin-top: 0; margin-bottom: 10px;">Entre para acessar todas as funcionalidades</p>
-    <input type="text" id="input-user" placeholder="Email ou usuário">
+    <input type="text" id="input-user" placeholder="Email">
     <input type="password" id="input-pass" placeholder="Senha">
     <div style="text-align: left; margin: 5px 0;"><small>Lembrar-me</small></div>
     <button id="btn-login" onclick="fazerLogin()">Entrar</button>
@@ -125,7 +125,7 @@
 <div id="main-content" class="hidden">
     <div class="header-container">
         <div style="display:flex; align-items:center; gap: 15px;">
-            <h2 style="margin: 0;">Analisador de Confrontos</h2>
+            <h2 style="margin: 0;">GT Analisador de Confrontos</h2>
             <div id="status-assinatura" style="font-weight: bold; font-size: 0.9em;">
                 Carregando status...
             </div>
@@ -169,7 +169,7 @@
             <option value="70">70</option>
             <option value="80">80</option>
         </select>
-        <button onclick="analisar()">Analisar Confrontos</button>
+        <button onclick="analisar()">GT Analisar Confrontos</button>
         <span id="sugestao"></span>
     </div>
 
@@ -177,7 +177,7 @@
 </div>
 
 <footer>
-    <p>&copy; 2026 Scanner 8 Minutos. Todos os direitos reservados.</p>
+    <p>&copy; 2026 GT Scanner 12 Minutos. Todos os direitos reservados.</p>
     <p>
         <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')" style="color: #ff8c00; text-decoration: none; margin: 0 10px;">Termos de Uso</a> | 
         <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')" style="color: #ff8c00; text-decoration: none; margin: 0 10px;">Política de Privacidade</a>
@@ -226,7 +226,7 @@
             modalText.innerText = "Política de Privacidade: Seus dados estão seguros e são usados apenas para validação de acesso. Não compartilhamos informações com terceiros. Lembre-se: este sistema não é um conselho financeiro. O uso é estritamente proibido para menores de 18 anos. Analise os dados com responsabilidade e jogue com consciência.";
         }
         else if (tipo === 'sobre') {
-            modalText.innerText = "Sobre o Scanner 8 Minutos:\n\nEste sistema processa estatísticas avançadas para análise de confrontos.\n\n• FIFA disponíveis: E-Soccer - Battle Volta - 6 Minutos, E-Soccer - Battle - 8 Minutos.\n• Atualização dos dados: Realizada automaticamente todos os dias às 10h.\n\nLembre-se: O uso consciente e baseado em dados é fundamental.";
+            modalText.innerText = "Sobre o Scanner 8 Minutos:\n\nEste sistema processa estatísticas avançadas para análise de confrontos.\n\n• FIFA disponível: E-Soccer - GT Legues - 12 Minutos.\n• Atualização dos dados: Realizada automaticamente todos os dias às 10h.\n\nLembre-se: O uso consciente e baseado em dados é fundamental.";
         }
         
         document.getElementById('modal-msg').classList.remove('hidden');
