@@ -498,18 +498,25 @@
             const meta = i + 0.5;
             const val = calcularScoreEstatisticoWeb(arrayDadosHistoricos, meta);
             const ehLinhaLiberada = (label.includes("0.5"));
-
+    
             if (!isVip && !ehLinhaLiberada) { 
                 return `<div class="card"><div style="margin-bottom:5px; font-size:12px;">${label}</div><a href="pagamento.html" class="btn-vip" target="_blank" style="padding: 5px; font-size: 11px;">🔒 APENAS VIP</a></div>`;
             }
             
+            // Define a cor com base na porcentagem
+            let corBarra = '#dc3545'; // Vermelho (abaixo de 70%)
+            if (val >= 80) {
+                corBarra = '#28a745'; // Verde (80% ou mais)
+            } else if (val >= 70) {
+                corBarra = '#ffc107'; // Amarelo (entre 70% e 79%)
+            }
+            
             return `<div style="display:flex; align-items:center; gap:8px; margin: 3px 0; font-size:11px;">
                         <span style="min-width:55px;">${label}</span>
-                        <div style="background:#444; height:10px; width:100%; border-radius:5px;"><div style="background:${val >= 80 ? '#28a745' : '#dc3545'}; height:100%; width:${val.toFixed(0)}%;"></div></div>
+                        <div style="background:#444; height:10px; width:100%; border-radius:5px;"><div style="background:${corBarra}; height:100%; width:${val.toFixed(0)}%;"></div></div>
                         <span style="min-width:30px; text-align:right;">${val.toFixed(0)}%</span>
                     </div>`;
         };
-
         document.getElementById('resultado').innerHTML = `
             <div class="card">Total: <b>${total}</b></div>
             ${renderCardSimple(`Vitórias ${A}`, vA, total, '#28a745')}
