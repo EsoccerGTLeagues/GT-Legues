@@ -3,192 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisador de Confrontos</title>
-    <!-- Adicionando a biblioteca do Supabase -->
+    <title>GT Scanner - Analisador de Confrontos FIFA 12 Min</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
-        --bg-color: #fdfaf7;
-        --card-bg: #ffffff;
-        --text-color: #333;
-        --accent: #FF8C00;
-        --sugestao-color: #d32f2f;
+        --bg-color: #0b0f17;
+        --card-bg: #131b28;
+        --card-border: #1e293b;
+        --input-bg: #0b0f17;
+        --text-color: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent: #ff8c00;
+        --accent-hover: #ffa024;
         --brand-color: #ff8c00;
+        --sugestao-color: #fbbf24;
+        --green-color: #10b981;
+        --yellow-color: #f59e0b;
+        --red-color: #ef4444;
+        --shadow-elevation: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
     }
-    body.dark {
-        --bg-color: #121212;
-        --card-bg: #1e1e1e;
-        --text-color: #e0e0e0;
-        --sugestao-color: #ffeb3b;
+
+    body.light {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --card-border: #e2e8f0;
+        --input-bg: #ffffff;
+        --text-color: #0f172a;
+        --text-muted: #64748b;
+        --accent: #ea580c;
+        --accent-hover: #f97316;
+        --brand-color: #ea580c;
+        --sugestao-color: #b45309;
+        --green-color: #059669;
+        --yellow-color: #d97706;
+        --red-color: #dc2626;
+        --shadow-elevation: 0 4px 15px rgba(0, 0, 0, 0.06);
     }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
     body { 
-        font-family: 'Segoe UI', sans-serif; 
-        padding: 20px; 
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        padding: 20px 16px; 
         background: var(--bg-color); 
         color: var(--text-color); 
-        transition: 0.3s;
+        transition: background 0.3s ease, color 0.3s ease;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        margin: 0;
+        background-image: radial-gradient(circle at top right, rgba(255, 140, 0, 0.05) 0%, transparent 40%);
     }
 
     .hidden { display: none !important; }
 
+    /* Auth Containers */
     #login-container, #cadastro-container {
-        max-width: 400px; margin: 50px auto;
-        background: #1e1e1e; padding: 30px; border-radius: 20px;
-        color: white; text-align: center;
-        border: 2px solid var(--brand-color);
+        max-width: 420px; 
+        margin: 40px auto;
+        background: var(--card-bg); 
+        padding: 32px 28px; 
+        border-radius: 24px;
+        color: var(--text-color); 
+        text-align: center;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation);
+        position: relative;
+        overflow: hidden;
     }
 
-    #login-container input, #cadastro-container input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #2a2a2a; color: white; box-sizing: border-box; }
+    #login-container::before, #cadastro-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff8c00, #38bdf8);
+    }
 
-    input { padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; background: white; }
-    body.dark input { background: #2a2a2a; color: white; border: 1px solid #444; }
+    .auth-logo {
+        max-width: 220px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto 12px auto;
+        display: block;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    }
+
+    input, select { 
+        padding: 12px 14px; 
+        border-radius: 12px; 
+        border: 1px solid var(--card-border); 
+        font-size: 14px; 
+        background: var(--input-bg);
+        color: var(--text-color);
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+
+    #login-container input, #cadastro-container input { 
+        width: 100%; 
+        margin: 8px 0; 
+        box-sizing: border-box; 
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+    }
 
     #btn-login, #btn-cadastrar {
-        width: 100%; padding: 12px; border-radius: 10px; border: none;
-        background: var(--brand-color); color: #000; font-weight: bold; cursor: pointer; margin-top: 10px;
+        width: 100%; 
+        padding: 13px; 
+        border-radius: 12px; 
+        border: none;
+        background: linear-gradient(135deg, var(--accent) 0%, #ffaa40 100%); 
+        color: #0b0f17; 
+        font-weight: 700; 
+        font-size: 15px;
+        cursor: pointer; 
+        margin-top: 14px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
     }
-    .controls { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px; }
+    #btn-login:hover, #btn-cadastrar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 140, 0, 0.4);
+    }
 
-    .card { background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
-    select, button { padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
-    button { background: var(--accent); color: white; border: none; cursor: pointer; font-weight: bold; }
-    #sugestao { font-weight: bold; margin-left: 10px; font-size: 14px; color: var(--sugestao-color); }
-    .grid-columns { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    
-    .btn-vip { background: #0056b3; color: white; border-radius: 5px; text-align: center; cursor: pointer; font-weight: bold; border: none; display: block; margin: 2px 0; padding: 4px; font-size: 11px; text-decoration: none; }
-    
-    @media (max-width: 600px) { .controls { flex-direction: column; } .stats { grid-template-columns: repeat(2, 1fr); } .grid-columns { grid-template-columns: 1fr; } }
-    
-    footer {
-        margin-top: auto;
-        text-align: center; 
-        padding: 20px; 
-        font-size: 13px; 
-        color: #888; 
-        border-top: 1px solid #333; 
-        background: var(--bg-color);
+    /* Main App Layout */
+    .app-container {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
     }
 
     .header-container {
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        padding: 15px; 
+        padding: 16px 22px; 
         background: var(--card-bg); 
         border-radius: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation);
+        margin-bottom: 20px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .brand-title-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-logo {
+        height: 38px;
+        width: auto;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid var(--card-border);
+    }
+
+    .btn-header {
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--card-border);
+        background: var(--input-bg);
+        color: var(--text-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+        background: rgba(255, 140, 0, 0.1);
+        border-color: var(--accent);
+    }
+
+    /* Controls Filter Bar */
+    .controls { 
+        background: var(--card-bg); 
+        padding: 20px 24px; 
+        border-radius: 20px; 
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation); 
+        margin-bottom: 24px; 
+        display: flex; 
+        gap: 12px; 
+        flex-wrap: wrap; 
+        align-items: center; 
+    }
+
+    .input-jogador {
+        flex: 1;
+        min-width: 170px;
+        font-weight: 600;
+    }
+
+    .vs-separator {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 14px;
+        padding: 0 4px;
+    }
+
+    .btn-analisar {
+        background: linear-gradient(135deg, var(--accent) 0%, #ffaa40 100%);
+        color: #0b0f17;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(255, 140, 0, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-analisar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(255, 140, 0, 0.4);
+    }
+
+    /* Grid do Confronto e dos Placares Recentes */
+    .top-banners-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
         margin-bottom: 20px;
     }
-    
+
+    @media (max-width: 900px) {
+        .top-banners-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Head-to-Head Banner */
+    #historico-confronto {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 16px 20px;
+        box-shadow: var(--shadow-elevation);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .player-profile {
+        text-align: center;
+        min-width: 110px;
+    }
+
+    .player-name {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--text-color);
+    }
+
+    .player-shield {
+        width: 42px;
+        height: 42px;
+        display: block;
+        margin: 0 auto;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+
+    .bolinhas-form {
+        display: flex;
+        gap: 5px;
+        margin-top: 8px;
+        justify-content: center;
+    }
+
     .bola-historico {
         width: 12px;
         height: 12px;
         border-radius: 50%;
         display: inline-block;
+        transition: transform 0.2s;
     }
-    .bola-vitoria { background-color: #28a745; }
-    .bola-derrota { background-color: #dc3545; }
-    .bola-empate { background-color: #6c757d; }
-    .bola-vazia { background-color: #333; border: 1px solid #555; }
+    .bola-vitoria { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+    .bola-derrota { background-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
+    .bola-empate { background-color: #94a3b8; }
+    .bola-vazia { background-color: #334155; border: 1px solid #475569; }
+
+    /* Card dos Últimos 5 Placares */
+    #card-ultimos-placares {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 16px 20px;
+        box-shadow: var(--shadow-elevation);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .card-placares-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 8px;
+    }
+
+    .card-placares-header h4 {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .lista-placares {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .item-placar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        background: rgba(11, 15, 23, 0.6);
+        border: 1px solid var(--card-border);
+    }
+
+    .item-placar.seco {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .score-badge {
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #1e293b;
+        color: #ffffff;
+    }
+
+    .validador-status {
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 11.5px;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .validador-sucesso {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #34d399;
+    }
+
+    .validador-alerta {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+    }
+
+    /* Suggestion Box */
+    .suggestion-container {
+        width: 100%;
+        margin-top: 10px;
+        padding: 12px 16px;
+        background: rgba(255, 140, 0, 0.08);
+        border: 1px solid rgba(255, 140, 0, 0.25);
+        border-radius: 12px;
+        font-size: 13.5px;
+        color: var(--sugestao-color);
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Stats Grid */
+    .stats { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
+        gap: 14px; 
+        margin-bottom: 24px; 
+    }
+
+    .card { 
+        background: var(--card-bg); 
+        padding: 16px 18px; 
+        border-radius: 16px; 
+        box-shadow: var(--shadow-elevation); 
+        border: 1px solid var(--card-border); 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .card-title {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .card-value {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-color);
+    }
+
+    .stat-progress-bar {
+        background: rgba(148, 163, 184, 0.2);
+        height: 6px;
+        width: 100%;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+
+    .stat-progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.4s ease;
+    }
+
+    /* 3 Column Over Goals Grid */
+    .grid-columns { 
+        grid-column: 1 / -1; 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 18px; 
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .grid-column-box h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .goal-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 6px 0;
+        font-size: 12px;
+    }
+
+    .goal-label {
+        min-width: 62px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .goal-track {
+        background: rgba(148, 163, 184, 0.15);
+        height: 10px;
+        flex: 1;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .goal-fill {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.5s ease;
+    }
+
+    .goal-percent {
+        min-width: 36px;
+        text-align: right;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .btn-vip { 
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); 
+        color: white; 
+        border-radius: 8px; 
+        text-align: center; 
+        cursor: pointer; 
+        font-weight: 700; 
+        border: none; 
+        display: block; 
+        margin: 2px 0; 
+        padding: 6px 10px; 
+        font-size: 11px; 
+        text-decoration: none; 
+        transition: all 0.2s ease;
+    }
+
+    .btn-vip:hover {
+        background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 860px) { 
+        .grid-columns { grid-template-columns: 1fr; } 
+    }
+
+    @media (max-width: 640px) { 
+        .controls { flex-direction: column; align-items: stretch; } 
+        .stats { grid-template-columns: repeat(2, 1fr); } 
+        .header-container { flex-direction: column; align-items: stretch; text-align: center; }
+        .header-controls { justify-content: center; }
+    }
+
+    footer {
+        margin-top: auto;
+        text-align: center; 
+        padding: 24px 16px; 
+        font-size: 13px; 
+        color: var(--text-muted); 
+        border-top: 1px solid var(--card-border); 
+        background: transparent;
+    }
+
+    footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Modal */
+    #modal-msg {
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0, 0, 0, 0.8); 
+        backdrop-filter: blur(4px);
+        z-index: 9999; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-box {
+        background: var(--card-bg); 
+        padding: 28px; 
+        border-radius: 20px; 
+        border: 1px solid var(--card-border); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        color: var(--text-color); 
+        text-align: left; 
+        max-width: 700px; 
+        width: 100%; 
+        max-height: 85vh; 
+        overflow-y: auto;
+    }
+
+    .modal-close-btn {
+        width: 100%; 
+        padding: 12px; 
+        border-radius: 12px; 
+        border: none; 
+        background: var(--accent); 
+        color: #0b0f17; 
+        font-weight: 800; 
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 18px;
+        transition: all 0.2s;
+    }
+    .modal-close-btn:hover {
+        background: var(--accent-hover);
+    }
 </style>
 </head>
 <body>
 
 <div id="login-container">
-    <img src="logo.png" alt="Logo Scanner 8 Minutos" style="width: 300px; margin-bottom: 5px;">
-    <h2 style="margin-top: 5px; margin-bottom: 5px;">Acesse sua conta</h2>
-    <p style="font-size: 0.9em; color: #aaa; margin-top: 0; margin-bottom: 10px;">Entre para acessar todas as funcionalidades</p>
-    <input type="text" id="input-user" placeholder="Email ou usuário">
-    <input type="password" id="input-pass" placeholder="Senha">
-    <div style="text-align: left; margin: 5px 0;"><small>Lembrar-me</small></div>
-    <button id="btn-login" onclick="fazerLogin()">Entrar</button>
-    <p style="margin-top: 10px; font-size: 0.8em; margin-bottom: 0;">Ainda não tem uma conta? <a href="#" onclick="event.preventDefault(); document.getElementById('login-container').classList.add('hidden'); document.getElementById('cadastro-container').classList.remove('hidden');" style="color: #00bcd4;">Cadastre-se</a></p>
-    <p style="margin-top: 15px; font-size: 0.8em;">Suporte: <a href="https://t.me/SGEEstoqly" target="_blank" style="color: #00bcd4; text-decoration: none;">@SGEEstoqly</a></p>
+    <img src="logo.png" alt="Logo GT Scanner" class="auth-logo" onerror="this.src='https://via.placeholder.com/280x100/131b28/ff8c00?text=GT+SCANNER'">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Acesse sua conta</h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Entre para acessar o scanner estatístico</p>
+    <input type="text" id="input-user" placeholder="E-mail ou usuário cadastrado">
+    <input type="password" id="input-pass" placeholder="Sua senha">
+    <button id="btn-login" onclick="fazerLogin()">Entrar na Plataforma</button>
+    <p style="margin-top: 14px; font-size: 13px; color: var(--text-muted);">
+        Ainda não tem conta? <a href="#" onclick="event.preventDefault(); document.getElementById('login-container').classList.add('hidden'); document.getElementById('cadastro-container').classList.remove('hidden');" style="color: var(--accent); font-weight: 700;">Cadastre-se</a>
+    </p>
+    <p style="margin-top: 14px; font-size: 12px; color: var(--text-muted);">
+        Suporte Telegram: <a href="https://t.me/SGEEstoqly" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 600;">@SGEEstoqly</a>
+    </p>
 </div>
 
 <div id="cadastro-container" class="hidden">
-    <img src="logo.png" alt="Logo Scanner 8 Minutos" style="width: 300px; margin-bottom: 5px;">
-    <h2 style="margin-top: 5px;">Criar Conta</h2>
-    <p style="font-size: 0.9em; color: #aaa;">Preencha para ter acesso</p>
-    <input type="text" id="cad-email" placeholder="Email" maxlength="60">
+    <img src="logo.png" alt="Logo GT Scanner" class="auth-logo" onerror="this.src='https://via.placeholder.com/280x100/131b28/ff8c00?text=GT+SCANNER'">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Criar Conta Gratuita</h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Cadastre seu e-mail para ter acesso</p>
+    <input type="email" id="cad-email" placeholder="Seu melhor e-mail" maxlength="60">
     <input type="password" id="cad-pass" placeholder="Senha (máx 8 dígitos)" maxlength="8">
-    <button id="btn-cadastrar" onclick="cadastrarUsuario()">Criar Conta</button>
-    <p style="margin-top: 10px; font-size: 0.8em;"><a href="#" onclick="event.preventDefault(); document.getElementById('cadastro-container').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden');" style="color: #00bcd4;">Voltar para o Login</a></p>
+    <button id="btn-cadastrar" onclick="cadastrarUsuario()">Criar Minha Conta</button>
+    <p style="margin-top: 14px; font-size: 13px;">
+        <a href="#" onclick="event.preventDefault(); document.getElementById('cadastro-container').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden');" style="color: var(--accent); font-weight: 700;">← Voltar para o Login</a>
+    </p>
 </div>
 
-<div id="main-content" class="hidden">
+<div id="main-content" class="hidden app-container">
     <div class="header-container">
-        <div style="display:flex; align-items:center; gap: 15px;">
-            <h2 style="margin: 0;">Analisador de Confrontos</h2>
-            <div id="status-assinatura" style="font-weight: bold; font-size: 0.9em;">
-                Carregando status...
+        <div class="brand-title-box">
+            <img src="logo.png" alt="GT Scanner" class="header-logo" onerror="this.style.display='none'">
+            <div>
+                <h2 style="font-size: 18px; font-weight: 800; line-height: 1.2;">Analisador de Confrontos</h2>
+                <div style="font-size: 12px; color: var(--text-muted);">FIFA GT Leagues 12 Min</div>
             </div>
         </div>
 
-        <div id="historico-confronto" style="display:flex; align-items:center; gap: 25px; display: none;">
-            <div style="text-align: center;">
-                <div style="font-size: 0.8em; margin-bottom: 2px;" id="nome-jogadorA">Jogador A</div>
-                <img id="img-jogadorA" src="https://png.pngtree.com/png-vector/20250527/ourmid/pngtree-blue-security-shield-icon-png-image_16390521.png" style="width:30px; height:30px;">
-                <div id="bolinhas-A" style="display:flex; gap: 4px; margin-top: 5px; justify-content: center;"></div>
+        <div class="header-controls">
+            <div id="status-assinatura" class="badge-status">
+                <span>🔄</span> Carregando status...
             </div>
-
-            <div style="font-weight: bold; color: #888;">VS</div>
-
-            <div style="text-align: center;">
-                <div style="font-size: 0.8em; margin-bottom: 2px;" id="nome-jogadorB">Jogador B</div>
-                <img id="img-jogadorB" src="https://png.pngtree.com/png-vector/20250527/ourmid/pngtree-blue-security-shield-icon-png-image_16390521.png" style="width:30px; height:30px;">
-                <div id="bolinhas-B" style="display:flex; gap: 4px; margin-top: 5px; justify-content: center;"></div>
-            </div>
-        </div>
-        
-        <div>
-            <button onclick="abrirModalInfo('sobre')" style="margin-right: 10px;">ℹ️ Sobre</button>
-            <button onclick="document.body.classList.toggle('dark')">🌓 Alternar Tema</button>
+            <button class="btn-header" onclick="abrirModalInfo('sobre')">ℹ️ Sobre o Robô</button>
+            <button class="btn-header" onclick="document.body.classList.toggle('light')">🌓 Tema</button>
+            <a href="pagamento.html" class="btn-header" style="text-decoration: none; border-color: var(--accent); color: var(--accent);">💎 Assinar VIP</a>
         </div>
     </div>
+
+    <!-- Grid com Confronto Direto e Últimos Placares Lado a Lado -->
+    <div id="top-banners-wrapper" class="top-banners-grid" style="display: none;">
+        <!-- Banner Confronto Direto -->
+        <div id="historico-confronto">
+            <div class="player-profile">
+                <div class="player-name" id="nome-jogadorA">Jogador A</div>
+                <img id="img-jogadorA" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'><defs><linearGradient id='gA' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff8c00'/><stop offset='100%25' stop-color='%23ea580c'/></linearGradient></defs><path d='M50 5 L90 20 L90 60 C90 90 50 115 50 115 C50 115 10 90 10 60 L10 20 Z' fill='url(%23gA)' stroke='%23ffaa40' stroke-width='4'/><path d='M50 15 L80 27 L80 58 C80 82 50 102 50 102 C50 102 20 82 20 58 L20 27 Z' fill='%23131b28' opacity='0.85'/><circle cx='50' cy='55' r='16' fill='%23ff8c00'/><path d='M50 43 L53 51 L62 51 L55 56 L58 65 L50 60 L42 65 L45 56 L38 51 L47 51 Z' fill='%230b0f17'/></svg>" class="player-shield" alt="Escudo A">
+                <div id="bolinhas-A" class="bolinhas-form"></div>
+            </div>
+
+            <div style="font-weight: 800; font-size: 20px; color: var(--accent); letter-spacing: 1px;">VS</div>
+
+            <div class="player-profile">
+                <div class="player-name" id="nome-jogadorB">Jogador B</div>
+                <img id="img-jogadorB" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'><defs><linearGradient id='gB' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230284c7'/><stop offset='100%25' stop-color='%230369a1'/></linearGradient></defs><path d='M50 5 L90 20 L90 60 C90 90 50 115 50 115 C50 115 10 90 10 60 L10 20 Z' fill='url(%23gB)' stroke='%2338bdf8' stroke-width='4'/><path d='M50 15 L80 27 L80 58 C80 82 50 102 50 102 C50 102 20 82 20 58 L20 27 Z' fill='%23131b28' opacity='0.85'/><circle cx='50' cy='55' r='16' fill='%230284c7'/><path d='M50 43 L53 51 L62 51 L55 56 L58 65 L50 60 L42 65 L45 56 L38 51 L47 51 Z' fill='%230b0f17'/></svg>" class="player-shield" alt="Escudo B">
+                <div id="bolinhas-B" class="bolinhas-form"></div>
+            </div>
+        </div>
+
+        <!-- Card dos Últimos 5 Placares com Validador de Jogos Zerados -->
+        <div id="card-ultimos-placares">
+            <div class="card-placares-header">
+                <h4>⚡ ÚLTIMOS 5 PLACARES</h4>
+                <span style="font-size: 11px; color: var(--text-muted);">Consistência Recente</span>
+            </div>
+            <div id="lista-ultimos-placares" class="lista-placares"></div>
+            <div id="validador-zerados" class="validador-status"></div>
+        </div>
+    </div>
+
     <div class="controls">
-        <input list="listaJogadores" id="jogadorA" class="input-jogador" placeholder="Jogador A"> 
-        vs 
-        <input list="listaJogadores" id="jogadorB" class="input-jogador" placeholder="Jogador B">
+        <input list="listaJogadores" id="jogadorA" class="input-jogador" placeholder="Selecione o Jogador A..."> 
+        <span class="vs-separator">VS</span> 
+        <input list="listaJogadores" id="jogadorB" class="input-jogador" placeholder="Selecione o Jogador B...">
         <datalist id="listaJogadores"></datalist>
 
-        <select id="limite">
-            <option value="todos">Todos</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-            <option value="60">60</option>
-            <option value="70">70</option>
-            <option value="80">80</option>
+        <select id="limite" style="font-weight: 600;">
+            <option value="todos">Todos os confrontos</option>
+            <option value="10">Últimos 10 jogos</option>
+            <option value="20">Últimos 20 jogos</option>
+            <option value="30">Últimos 30 jogos</option>
+            <option value="40">Últimos 40 jogos</option>
+            <option value="50">Últimos 50 jogos</option>
+            <option value="60">Últimos 60 jogos</option>
+            <option value="70">Últimos 70 jogos</option>
+            <option value="80">Últimos 80 jogos</option>
         </select>
-        <button onclick="analisar()">Analisar Confrontos</button>
-        <span id="sugestao"></span>
+        <button class="btn-analisar" onclick="analisar()">
+            <span>⚡ Analisar Confrontos</span>
+        </button>
+    </div>
+
+    <div id="sugestao-container" style="display: none; margin-bottom: 20px;">
+        <div class="suggestion-container">
+            <span style="font-size: 20px;">💡</span>
+            <div id="sugestao"></div>
+        </div>
     </div>
 
     <div id="resultado" class="stats"></div>
 </div>
 
 <footer>
-    <p>© 2026 Scanner 8 Minutos. Todos os direitos reservados.</p>
-    <p>
-        <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')" style="color: #ff8c00; text-decoration: none; margin: 0 10px;">Termos de Uso</a> | 
-        <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')" style="color: #ff8c00; text-decoration: none; margin: 0 10px;">Política de Privacidade</a>
+    <p>© 2026 GT Scanner 8/12 Minutos. Todos os direitos reservados.</p>
+    <p style="margin-top: 8px;">
+        <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')">Termos de Uso</a> &nbsp;|&nbsp; 
+        <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')">Política de Privacidade</a> &nbsp;|&nbsp;
+        <a href="https://t.me/SGEEstoqly" target="_blank">Suporte Telegram</a>
     </p>
 </footer>
 
-<div id="modal-msg" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center;">
-    <!-- ALTERE ESTA DIV ABAIXO -->
-    <div style="background: #1e1e1e; padding: 25px; border-radius: 15px; border: 2px solid #ff8c00; color: white; text-align: left; max-width: 750px; width: 90%; max-height: 85vh; overflow-y: auto;">
-        <p id="modal-text" style="font-size: 1em; margin-bottom: 20px; color: white !important; white-space: pre-line; line-height: 1.5;"></p>
-        <button onclick="document.getElementById('modal-msg').classList.add('hidden')" style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #ff8c00; color: #000; font-weight: bold; cursor: pointer;">Fechar</button>
+<div id="modal-msg" class="hidden">
+    <div class="modal-box">
+        <p id="modal-text" style="font-size: 14px; white-space: pre-line; line-height: 1.6;"></p>
+        <button class="modal-close-btn" onclick="document.getElementById('modal-msg').classList.add('hidden')">Entendido / Fechar</button>
     </div>
 </div>
 
@@ -208,7 +782,9 @@
             if (error) throw error;
 
             const dataList = document.getElementById('listaJogadores');
-            dataList.innerHTML = data.map(j => `<option value="${j.nome}">`).join('');
+            if (data && data.length > 0) {
+                dataList.innerHTML = data.map(j => `<option value="${j.nome}">`).join('');
+            }
         } catch (err) {
             console.error("Erro ao carregar lista de jogadores:", err);
         }
@@ -220,13 +796,13 @@
         const modalText = document.getElementById('modal-text');
         
         if (tipo === 'termos') {
-            modalText.innerText = "Termos de Uso: Este sistema é uma ferramenta avançada de análise de desempenho estatístico de jogadores de FIFA. NÃO somos recomendação de investimento ou garantia de lucro. Ao decidir realizar entradas em apostas esportivas, nunca opere às cegas; tome decisões embasadas em dados concretos. É estritamente obrigatório ter 18 anos ou mais. Apostas esportivas envolvem riscos reais: jogue apenas o que você pode perder e com total responsabilidade.";
+            modalText.innerText = "TERMOS DE USO:\n\nEste sistema é uma ferramenta avançada de análise de desempenho estatístico de jogadores de FIFA / E-Soccer. NÃO somos recomendação de investimento ou garantia de lucro.\n\nAo decidir realizar entradas em apostas esportivas, nunca opere às cegas; tome decisões embasadas em dados concretos. É estritamente obrigatório ter 18 anos ou mais.\n\nApostas esportivas envolvem riscos reais: opere com gestão de banca, jogue apenas o que você pode perder e com total responsabilidade.";
         } 
         else if (tipo === 'privacidade') {
-            modalText.innerText = "Política de Privacidade: Seus dados estão seguros e são utilizados exclusivamente para validação de acesso à plataforma. Não compartilhamos informações com terceiros. Lembre-se: este sistema não constitui conselho financeiro. O uso é proibido para menores de 18 anos. Analise as estatísticas com critério e mantenha uma postura consciente.";
+            modalText.innerText = "POLÍTICA DE PRIVACIDADE:\n\nSeus dados estão seguros e são utilizados exclusivamente para validação de acesso e personalização da plataforma. Não compartilhamos informações com terceiros.\n\nLembre-se: este sistema não constitui conselho financeiro. O uso é proibido para menores de 18 anos. Analise as estatísticas com critério e mantenha uma postura consciente.";
         }
         else if (tipo === 'sobre') {
-            modalText.innerText = "Sobre o GT Scanner 12 Minutos:\n\nEste sistema processa estatísticas avançadas para a análise de confrontos e tendências de gols.\n\n• Competição monitorada: E-Soccer Fifa 12 Minutos - GT Legues.\n• Atualização dos dados: Realizada de forma automatizada diariamente às 10h.\n\n--- \n\nLÓGICA E INTELIGÊNCIA DO ALGORITMO:\n\n1. O Mercado Funciona por Fases (Sequências):\nNo futebol real, padrões duram meses. No Fifa, os algoritmos operam em ciclos. Um time com excelente média histórica pode entrar em uma 'seca' de 2 ou 3 dias. Se o sistema usa apenas o histórico geral, ele fica 'preso ao passado' e ignora que o time travou. Com 40% de peso recente, o sistema percebe e reage rapidamente às mudanças de fase.\n\n2. Redução de Falsos Positivos em Dias Retraídos:\nEm momentos onde as defesas levam vantagem (muitos jogos 0x0 ou 1x0), o peso do momento atual puxa o Score para baixo automaticamente, impedindo entradas arriscadas baseadas apenas em confrontos de semanas atrás.\n\n3. O Ponto Doce (Equilíbrio Ideal):\n• 40% Frequência Geral: Olha o macro e a compatibilidade histórica das equipes.\n• 40% Histórico Recente: Dá sensibilidade de curto prazo para o comportamento das últimas horas.\n• 20% Confiança: Mede se a amostragem de dados é estatisticamente sólida.\n\nO futebol Fifa muda rápido, e essa distribuição garante reflexos precisos.";
+            modalText.innerText = "SOBRE O GT SCANNER (FIFA 12 MIN):\n\nEste sistema processa estatísticas avançadas para a análise de confrontos e tendências de gols.\n\n• Competição monitorada: E-Soccer Fifa 12 Minutos - GT Leagues.\n• Atualização dos dados: Realizada de forma automatizada diariamente às 10h.\n\n--- \n\nLÓGICA E INTELIGÊNCIA DO ALGORITMO:\n\n1. O Mercado Funciona por Fases (Sequências):\nNo futebol real, padrões duram meses. No Fifa, os algoritmos operam em ciclos. Um time com excelente média histórica pode entrar em uma 'seca' de 2 ou 3 dias. Se o sistema usa apenas o histórico geral, ele fica 'preso ao passado' e ignora que o time travou. Com 40% de peso recente, o sistema percebe e reage rapidamente às mudanças de fase.\n\n2. Redução de Falsos Positivos em Dias Retraídos:\nEm momentos onde as defesas levam vantagem (muitos jogos 0x0 ou 1x0), o peso do momento atual puxa o Score para baixo automaticamente, impedindo entradas arriscadas baseadas apenas em confrontos de semanas atrás.\n\n3. O Ponto Doce (Equilíbrio Ideal):\n• 40% Frequência Geral: Olha o macro e a compatibilidade histórica das equipes.\n• 40% Histórico Recente: Dá sensibilidade de curto prazo para o comportamento das últimas horas.\n• 20% Confiança: Mede se a amostragem de dados é estatisticamente sólida.";
         }
         
         document.getElementById('modal-msg').classList.remove('hidden');
@@ -239,12 +815,16 @@
 
     async function fazerLogin() {
         const btnLogin = document.getElementById('btn-login');
-        const user = document.getElementById('input-user').value;
-        const pass = document.getElementById('input-pass').value;
+        const user = document.getElementById('input-user').value.trim();
+        const pass = document.getElementById('input-pass').value.trim();
         
-        if(!user || !pass) { alert("Preencha usuário e senha"); return; }
+        if(!user || !pass) { 
+            showModal("Por favor, preencha o e-mail e a senha."); 
+            return; 
+        }
 
-        btnLogin.innerText = "VALIDANDO...";
+        btnLogin.innerText = "VALIDANDO ACESSO...";
+        btnLogin.disabled = true;
         
         try {
             const { data: authData, error: authError } = await db.auth.signInWithPassword({
@@ -260,63 +840,73 @@
                 .eq('email', user)
                 .single();
 
-            if (userError) throw userError;
+            if (userError) console.warn("Aviso busca tipo:", userError);
 
             if (userData) {
                 isVip = (userData.tipo && userData.tipo.toLowerCase() === "assinante");
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-
-                atualizarStatusAssinatura(user);
+            } else {
+                isVip = false;
             }
+
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+
+            atualizarStatusAssinatura(user);
 
         } catch (err) {
             console.error(err);
-            
             let mensagemAmigavel = "E-mail ou senha incorretos. Verifique seus dados.";
             
             if (err.message && (err.message.includes("single JSON object") || err.message.includes("Invalid login credentials"))) {
                 mensagemAmigavel = "Usuário não encontrado ou senha incorreta.";
             } else if (err.message) {
-                mensagemAmigavel = "Erro ao tentar realizar login. Tente novamente mais tarde.";
+                mensagemAmigavel = "Erro ao tentar realizar login. Verifique sua conexão.";
             }
 
             showModal(mensagemAmigavel);
         }
-        btnLogin.innerText = "Entrar";
+        btnLogin.innerText = "Entrar na Plataforma";
+        btnLogin.disabled = false;
     }
 
     async function atualizarStatusAssinatura(emailUsuario) {
-        const { data, error } = await db
-            .from('usuarios_com_status')
-            .select('dias_para_expirar')
-            .eq('email', emailUsuario)
-            .single();
+        try {
+            const { data, error } = await db
+                .from('usuarios_com_status')
+                .select('dias_para_expirar')
+                .eq('email', emailUsuario)
+                .single();
 
-        if (data) {
             const statusDiv = document.getElementById('status-assinatura');
-            const dias = data.dias_para_expirar;
 
-            if (dias === null) {
-                statusDiv.innerHTML = `💎 Plano Gratuito`;
-                statusDiv.style.color = "gray"; 
-            } else if (dias < 0) {
-                statusDiv.innerHTML = `⚠️ Vencido há ${Math.abs(dias)} dias`;
-                statusDiv.style.color = "red";
-            } else if (dias <= 3) {
-                statusDiv.innerHTML = `⏳ Expira em ${dias} dias!`;
-                statusDiv.style.color = "orange";
+            if (data) {
+                const dias = data.dias_para_expirar;
+
+                if (dias === null) {
+                    statusDiv.innerHTML = `<span>💎</span> Plano Gratuito`;
+                    statusDiv.style.color = "#94a3b8"; 
+                } else if (dias < 0) {
+                    statusDiv.innerHTML = `<span>⚠️</span> Vencido há ${Math.abs(dias)} dias`;
+                    statusDiv.style.color = "#ef4444";
+                } else if (dias <= 3) {
+                    statusDiv.innerHTML = `<span>⏳</span> Expira em ${dias} dias!`;
+                    statusDiv.style.color = "#f59e0b";
+                } else {
+                    statusDiv.innerHTML = `<span>✅</span> VIP Ativo (${dias} dias)`;
+                    statusDiv.style.color = "#10b981";
+                }
             } else {
-                statusDiv.innerHTML = `✅ Plano ativo (${dias} dias)`;
-                statusDiv.style.color = "green";
+                statusDiv.innerHTML = `<span>💎</span> Acesso Padrão`;
             }
+        } catch (e) {
+            console.error(e);
         }
     }
 
     async function cadastrarUsuario() {
         const btn = document.getElementById('btn-cadastrar');
-        const user = document.getElementById('cad-email').value;
-        const pass = document.getElementById('cad-pass').value;
+        const user = document.getElementById('cad-email').value.trim();
+        const pass = document.getElementById('cad-pass').value.trim();
 
         if (!user || !pass) { 
             showModal("Preencha todos os campos."); 
@@ -332,6 +922,7 @@
         }
 
         btn.innerText = "Cadastrando...";
+        btn.disabled = true;
         try {
             const { data: authData, error: authError } = await db.auth.signUp({
                 email: user,
@@ -346,12 +937,11 @@
 
             if (dbError) throw dbError;
             
-            showModal("Cadastro realizado com sucesso! Agora você pode logar.");
+            showModal("Cadastro realizado com sucesso! Agora você pode efetuar o login.");
             document.getElementById('cadastro-container').classList.add('hidden');
             document.getElementById('login-container').classList.remove('hidden');
         } catch (err) { 
             console.error(err);
-            
             let mensagemAmigavel = "Erro ao realizar o cadastro. Tente novamente.";
             
             if (err.message && (err.message.includes("already registered") || err.message.includes("User already registered"))) {
@@ -362,10 +952,11 @@
 
             showModal(mensagemAmigavel);
         }
-        btn.innerText = "Criar Conta";
+        btn.innerText = "Criar Minha Conta";
+        btn.disabled = false;
     }
 
-    // Função de Score Estatístico ajustada com os mesmos pesos do Robô (40% Frequência, 40% Histórico Recente, 20% Confiança)
+    // Função de Score Estatístico (40% Frequência, 40% Histórico Recente, 20% Confiança)
     function calcularScoreEstatisticoWeb(arrayValores, meta) {
         if (!arrayValores || arrayValores.length < 3) return 0;
         
@@ -373,7 +964,6 @@
         const acertos = arrayValores.filter(val => val >= meta).length;
         const freq_prob = (acertos / totalItens) * 100;
         
-        // Pega os últimos 10 valores na ordem reversa (mais recentes)
         const recentes = [...arrayValores].reverse().slice(0, 10);
         const pesos = Array.from({length: recentes.length}, (_, i) => recentes.length - i);
         const somaPesos = pesos.reduce((a, b) => a + b, 0);
@@ -389,9 +979,12 @@
         const B = document.getElementById('jogadorB').value.trim();
         const limite = document.getElementById('limite').value;
         
-        if (!A || !B) { alert("Por favor, selecione dois jogadores."); return; }
+        if (!A || !B) { 
+            showModal("Por favor, selecione os dois jogadores para o confronto."); 
+            return; 
+        }
         
-        document.getElementById('resultado').innerHTML = "Buscando dados...";
+        document.getElementById('resultado').innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 40px;'><p style='font-size: 16px; color: var(--accent);'>🔍 Buscando e cruzando estatísticas dos jogadores...</p></div>";
         
         const { data: confrontos, error } = await db.rpc('buscar_confrontos', { 
             nome_a: A, 
@@ -400,7 +993,7 @@
 
         if (error) { 
             console.error("Erro Supabase:", error);
-            alert("Erro ao buscar dados no banco: " + error.message); 
+            showModal("Erro ao buscar dados no banco: " + error.message); 
             return; 
         }
         
@@ -409,7 +1002,9 @@
         if (limite !== "todos") listaConfrontos = listaConfrontos.slice(-parseInt(limite));
         
         if (listaConfrontos.length === 0) { 
-            document.getElementById('resultado').innerHTML = `Nenhum confronto encontrado entre "${A}" e "${B}". Verifique se os nomes existem na tabela.`; 
+            document.getElementById('top-banners-wrapper').style.display = 'none';
+            document.getElementById('sugestao-container').style.display = 'none';
+            document.getElementById('resultado').innerHTML = `<div class='card' style='grid-column: 1/-1; text-align: center; padding: 30px;'><p>Nenhum confronto registrado entre <b>"${A}"</b> e <b>"${B}"</b>.</p><p style='color: var(--text-muted); font-size: 13px; margin-top: 6px;'>Verifique a grafia dos nomes na lista de sugestões.</p></div>`; 
             return; 
         }
 
@@ -418,18 +1013,17 @@
         let golsSofridosA = 0, golsSofridosB = 0;
         let counts = { jogo: Array(8).fill(0), jogA: Array(8).fill(0), jogB: Array(8).fill(0) };
 
-        // Arrays para guardar a sequência de gols por partida para o cálculo exato dos pesos
         let historicoGolsJogo = [];
         let historicoGolsJogA = [];
         let historicoGolsJogB = [];
 
         listaConfrontos.forEach(c => {
-            const ehCasa = (c.jogador_casa.toLowerCase() === A.toLowerCase());
+            const ehCasa = (c.jogador_casa && c.jogador_casa.toLowerCase() === A.toLowerCase());
             
             let golsA = (ehCasa ? (c.gols_casa || 0) : (c.gols_visitante || 0));
             let golsB = (ehCasa ? (c.gols_visitante || 0) : (c.gols_casa || 0));
             let sofridosA = (ehCasa ? (c.gols_visitante || 0) : (c.gols_casa || 0));
-            let sofridosB = (ehCasa ? (c.gols_casa || 0) : (c.gols_visitante || 0));
+            let sofridosB = (ehCasa ? (c.gols_visitante || 0) : (c.gols_casa || 0));
             
             gA += golsA; 
             gB += golsB; 
@@ -453,20 +1047,49 @@
         });
 
         const total = listaConfrontos.length;
-        document.getElementById('historico-confronto').style.display = 'flex';
+        document.getElementById('top-banners-wrapper').style.display = 'grid';
         document.getElementById('nome-jogadorA').innerText = A;
         document.getElementById('nome-jogadorB').innerText = B;
 
         const last5 = listaConfrontos.slice(-5).reverse(); 
         let formA = [];
         let formB = [];
-        last5.forEach(c => {
-            const golsA = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? c.gols_casa : c.gols_visitante;
-            const golsB = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? c.gols_visitante : c.gols_casa;
+        let placaresHtml = '';
+        let qtdSecos = 0;
+
+        last5.forEach((c, idx) => {
+            const golsA = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? (c.gols_casa || 0) : (c.gols_visitante || 0);
+            const golsB = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? (c.gols_visitante || 0) : (c.gols_casa || 0);
+            const soma = golsA + golsB;
+            const ehSeco = (soma <= 1); // 0x0 ou 1x0
+
+            if (ehSeco) qtdSecos++;
+
             if (golsA > golsB) { formA.push('V'); formB.push('D'); }
             else if (golsB > golsA) { formA.push('D'); formB.push('V'); }
             else { formA.push('E'); formB.push('E'); }
+
+            placaresHtml += `
+                <div class="item-placar ${ehSeco ? 'seco' : ''}">
+                    <span style="color: var(--text-muted); font-size: 11px; width: 20px;">#${idx + 1}</span>
+                    <span style="font-weight: 600;">${A}</span>
+                    <span class="score-badge" style="${ehSeco ? 'background: rgba(239,68,68,0.25); color:#fca5a5;' : ''}">${golsA} x ${golsB}</span>
+                    <span style="font-weight: 600;">${B}</span>
+                    <span style="font-size: 11px; font-weight: 700; color: ${soma >= 4 ? '#10b981' : soma >= 2 ? '#38bdf8' : '#ef4444'};">${soma} gol${soma === 1 ? '' : 's'}</span>
+                </div>
+            `;
         });
+
+        document.getElementById('lista-ultimos-placares').innerHTML = placaresHtml || '<div style="color:var(--text-muted); font-size:12px;">Sem dados</div>';
+
+        const validadorBox = document.getElementById('validador-zerados');
+        if (qtdSecos === 0) {
+            validadorBox.className = 'validador-status validador-sucesso';
+            validadorBox.innerHTML = '<span>✅</span> <div><b>Nenhum placar zerado (0x0/1x0):</b> Alta fluidez de gols nos confrontos recentes.</div>';
+        } else {
+            validadorBox.className = 'validador-status validador-alerta';
+            validadorBox.innerHTML = `<span>⚠️</span> <div><b>${qtdSecos} jogo(s) travado(s) (≤ 1 gol):</b> Houve jogo seco recente. Prefira linhas com margem de segurança.</div>`;
+        }
 
         renderizarBolinhas('bolinhas-A', formA);
         renderizarBolinhas('bolinhas-B', formB);
@@ -474,78 +1097,99 @@
         const mediaGols = totalGols / total;
         let sugestaoOver = Math.max(0.5, mediaGols - 1.5).toFixed(1); 
         
+        document.getElementById('sugestao-container').style.display = 'block';
         if (isVip) {
             const val = parseFloat(sugestaoOver);
             let mensagens = (val >= 4.0) ? [
                 `Padrão ofensivo detectado. As últimas partidas mostram um confronto aberto, com equipes buscando o gol durante todo o jogo. Sugestão: Over ${sugestaoOver} gols.`,
                 `O histórico recente indica alta intensidade ofensiva, aumentando significativamente a probabilidade de um jogo com muitos gols. Sugestão: Over ${sugestaoOver} gols.`,
                 `Os dados identificam um confronto de ritmo acelerado, com grande volume de oportunidades criadas. Sugestão: Over ${sugestaoOver} gols.`,
-                `O comportamento das equipes nas últimas partidas demonstra um cenário favorável para um placar movimentado. Sugestão: Over ${sugestaoOver} gols.`,
-                `As estatísticas recentes apontam uma forte tendência para um jogo aberto, com ataques levando vantagem sobre as defesas. Sugestão: Over ${sugestaoOver} gols.`
+                `O comportamento das equipes nas últimas partidas demonstra um cenário favorável para um placar movimentado. Sugestão: Over ${sugestaoOver} gols.`
             ] : [
                 `Padrão defensivo identificado. As últimas partidas demonstram um confronto mais truncado, com poucas oportunidades claras de gol. Sugestão: Over ${sugestaoOver} gols.`,
                 `Os dados recentes revelam equipes que priorizam a organização defensiva, reduzindo o volume ofensivo da partida. Sugestão: Over ${sugestaoOver} gols.`,
-                `O histórico aponta um jogo equilibrado, onde as defesas têm conseguido neutralizar a maioria das ações ofensivas. Sugestão: Over ${sugestaoOver} gols.`,
-                `As estatísticas indicam uma tendência de ritmo mais controlado, com poucas finalizações e placares discretos. Sugestão: Over ${sugestaoOver} gols.`,
-                `Os últimos confrontos apresentam um comportamento tático, com equipes estudando bastante as jogadas antes de atacar. Sugestão: Over ${sugestaoOver} gols.`
+                `O histórico aponta um jogo equilibrado, onde as defesas têm conseguido neutralizar a maioria das ações ofensivas. Sugestão: Over ${sugestaoOver} gols.`
             ];
             document.getElementById('sugestao').innerText = mensagens[Math.floor(Math.random() * mensagens.length)];
         } else {
-            document.getElementById('sugestao').innerHTML = '<a href="pagamento.html" class="btn-vip" target="_blank" style="padding: 5px 10px; display: inline-block;">🔒 SUGESTÃO VIP</a>';
+            document.getElementById('sugestao').innerHTML = '<span>🔒 <b>Análise Preditiva de I.A VIP:</b> Desbloqueie as sugestões automáticas de gols e scores em tempo real. <a href="pagamento.html" class="btn-vip" style="display:inline-block; margin-left:8px;">ASSINAR VIP</a></span>';
         }
 
         const renderBar = (arrayDadosHistoricos, total, label, i) => {
             const meta = i + 0.5;
             const val = calcularScoreEstatisticoWeb(arrayDadosHistoricos, meta);
             const ehLinhaLiberada = (label.includes("0.5"));
-    
+
             if (!isVip && !ehLinhaLiberada) { 
-                return `<div class="card"><div style="margin-bottom:5px; font-size:12px;">${label}</div><a href="pagamento.html" class="btn-vip" target="_blank" style="padding: 5px; font-size: 11px;">🔒 APENAS VIP</a></div>`;
+                return `<div class="goal-row" style="opacity: 0.7;"><span class="goal-label">${label}</span><a href="pagamento.html" class="btn-vip" style="flex:1; padding: 4px;">🔒 APENAS VIP</a></div>`;
             }
             
-            // Define a cor com base na porcentagem
-            let corBarra = '#dc3545'; // Vermelho (abaixo de 70%)
+            let corBarra = '#ef4444'; // Vermelho
             if (val >= 80) {
-                corBarra = '#28a745'; // Verde (80% ou mais)
+                corBarra = '#10b981'; // Verde
             } else if (val >= 70) {
-                corBarra = '#ffc107'; // Amarelo (entre 70% e 79%)
+                corBarra = '#f59e0b'; // Amarelo
             }
             
-            return `<div style="display:flex; align-items:center; gap:8px; margin: 3px 0; font-size:11px;">
-                        <span style="min-width:55px;">${label}</span>
-                        <div style="background:#444; height:10px; width:100%; border-radius:5px;"><div style="background:${corBarra}; height:100%; width:${val.toFixed(0)}%;"></div></div>
-                        <span style="min-width:30px; text-align:right;">${val.toFixed(0)}%</span>
+            return `<div class="goal-row">
+                        <span class="goal-label">${label}</span>
+                        <div class="goal-track"><div class="goal-fill" style="background:${corBarra}; width:${val.toFixed(0)}%;"></div></div>
+                        <span class="goal-percent" style="color:${corBarra};">${val.toFixed(0)}%</span>
                     </div>`;
         };
+
         document.getElementById('resultado').innerHTML = `
-            <div class="card">Total: <b>${total}</b></div>
-            ${renderCardSimple(`Vitórias ${A}`, vA, total, '#28a745')}
-            ${renderCardSimple(`Vitórias ${B}`, vB, total, '#28a745')}
-            ${renderCardSimple('Empates', empates, total, '#ffc107')}
-            ${renderCardSimple('Ambas', ambasMarcamCount, total, '#28a745')}
-            ${renderVipStat('Média Gols', (totalGols / total).toFixed(2))}
+            <div class="card">
+                <div class="card-title">Total de Confrontos</div>
+                <div class="card-value">${total} jogos</div>
+            </div>
+            ${renderCardSimple(`Vitórias ${A}`, vA, total, '#10b981')}
+            ${renderCardSimple(`Vitórias ${B}`, vB, total, '#10b981')}
+            ${renderCardSimple('Empates', empates, total, '#f59e0b')}
+            ${renderCardSimple('Ambas Marcam', ambasMarcamCount, total, '#10b981')}
+            ${renderVipStat('Média Geral de Gols', (totalGols / total).toFixed(2))}
             ${renderVipStat('Média Gols ' + A, (gA / total).toFixed(2))}
             ${renderVipStat('Média Gols ' + B, (gB / total).toFixed(2))}
             ${renderVipStat('Gols Feitos ' + A, gA)}
-            ${renderVipStat('Sofridos ' + A, golsSofridosA)}
+            ${renderVipStat('Gols Sofridos ' + A, golsSofridosA)}
             ${renderVipStat('Gols Feitos ' + B, gB)}
-            ${renderVipStat('Sofridos ' + B, golsSofridosB)}
-            <div class="card grid-columns" style="grid-column: 1 / -1;">
-                <div><h3>OVER GOLS NO JOGO</h3>${counts.jogo.map((c, i) => renderBar(historicoGolsJogo, total, (i+0.5)+' Gols', i)).join('')}</div>
-                <div><h3>JOGADOR ${A}</h3>${counts.jogA.map((c, i) => renderBar(historicoGolsJogA, total, (i+0.5)+' Gols', i)).join('')}</div>
-                <div><h3>JOGADOR ${B}</h3>${counts.jogB.map((c, i) => renderBar(historicoGolsJogB, total, (i+0.5)+' Gols', i)).join('')}</div>
+            ${renderVipStat('Gols Sofridos ' + B, golsSofridosB)}
+            <div class="grid-columns">
+                <div class="grid-column-box"><h3>⚽ OVER GOLS NO JOGO</h3>${counts.jogo.map((c, i) => renderBar(historicoGolsJogo, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR ${A}</h3>${counts.jogA.map((c, i) => renderBar(historicoGolsJogA, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR ${B}</h3>${counts.jogB.map((c, i) => renderBar(historicoGolsJogB, total, (i+0.5)+' Gols', i)).join('')}</div>
             </div>
         `;
     }
 
     function renderCardSimple(label, count, total, color) {
         const p = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
-        return `<div class="card"><div>${label}: <b>${count}</b></div><div style="font-weight:bold; text-align: center;">${p}%</div><div style="background:#444; height:6px; width:100%; border-radius:3px;"><div style="background:${color}; height:100%; width:${p}%; border-radius:3px;"></div></div></div>`;
+        return `
+        <div class="card">
+            <div class="card-title">${label}</div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span class="card-value">${count}</span>
+                <span style="font-weight:700; color:${color}; font-size:14px;">${p}%</span>
+            </div>
+            <div class="stat-progress-bar">
+                <div class="stat-progress-fill" style="background:${color}; width:${p}%;"></div>
+            </div>
+        </div>`;
     }
 
     function renderVipStat(label, value) {
-        if (isVip) return `<div class="card">${label}: <b>${value}</b></div>`;
-        return `<div class="card"><div style="margin-bottom:5px; font-size:12px;">${label}</div><a href="pagamento.html" class="btn-vip" target="_blank" style="padding: 5px; font-size: 11px;">🔒 APENAS VIP</a></div>`;
+        if (isVip) {
+            return `
+            <div class="card">
+                <div class="card-title">${label}</div>
+                <div class="card-value" style="color:var(--accent);">${value}</div>
+            </div>`;
+        }
+        return `
+        <div class="card">
+            <div class="card-title">${label}</div>
+            <a href="pagamento.html" class="btn-vip">🔒 DESBLOQUEAR VIP</a>
+        </div>`;
     }
 
     function renderizarBolinhas(containerId, resultados) {
@@ -565,10 +1209,13 @@
 
             if (valorLimpo === 'V') {
                 bola.classList.add('bola-vitoria');
+                bola.title = 'Vitória';
             } else if (valorLimpo === 'D') {
                 bola.classList.add('bola-derrota');
+                bola.title = 'Derrota';
             } else if (valorLimpo === 'E') {
                 bola.classList.add('bola-empate');
+                bola.title = 'Empate';
             } else {
                 bola.classList.add('bola-vazia');
             }
