@@ -682,7 +682,7 @@
             <div id="status-assinatura" class="badge-status">
                 <span>🔄</span> Carregando status...
             </div>
-            <button class="btn-header" onclick="abrirModalInfo('sobre')">ℹ️ Sobre o Sistema</button>
+            <button class="btn-header" onclick="abrirModalInfo('sobre')">ℹ️ Sobre o Robô</button>
             <button class="btn-header" onclick="document.body.classList.toggle('light')">🌓 Tema</button>
             <a href="pagamento.html" class="btn-header" style="text-decoration: none; border-color: var(--accent); color: var(--accent);">💎 Assinar VIP</a>
         </div>
@@ -802,7 +802,7 @@
             modalText.innerText = "POLÍTICA DE PRIVACIDADE:\n\nSeus dados estão seguros e são utilizados exclusivamente para validação de acesso e personalização da plataforma. Não compartilhamos informações com terceiros.\n\nLembre-se: este sistema não constitui conselho financeiro. O uso é proibido para menores de 18 anos. Analise as estatísticas com critério e mantenha uma postura consciente.";
         }
         else if (tipo === 'sobre') {
-            modalText.innerText = "SOBRE O GT SCANNER (FIFA 12 MIN):\n\nEste sistema processa estatísticas avançadas para a análise de confrontos e tendências de gols.\n\n• Competição monitorada: E-Soccer Fifa 12 Minutos - GT Leagues.\n• Atualização dos dados: Realizada de forma automatizada diariamente às 10h.\n\n--- \n\nLÓGICA E INTELIGÊNCIA DO ALGORITMO:\n\n1. O Mercado Funciona por Fases (Sequências):\nNo futebol real, padrões duram meses. No Fifa, os algoritmos operam em ciclos. Um time com excelente média histórica pode entrar em uma 'seca' de 2 ou 3 dias. Se o sistema usa apenas o histórico geral, ele fica 'preso ao passado' e ignora que o time travou. Com 40% de peso recente, o sistema percebe e reage rapidamente às mudanças de fase.\n\n2. Redução de Falsos Positivos em Dias Retraídos:\nEm momentos onde as defesas levam vantagem (muitos jogos 0x0 ou 1x0), o peso do momento atual puxa o Score para baixo automaticamente, impedindo entradas arriscadas baseadas apenas em confrontos de semanas atrás.\n\n3. O Ponto Doce (Equilíbrio Ideal):\n• 40% Frequência Geral: Olha o macro e a compatibilidade histórica das equipes.\n• 40% Histórico Recente: Dá sensibilidade de curto prazo para o comportamento das últimas horas.\n• 20% Confiança: Mede se a amostragem de dados é estatisticamente sólida.";
+            modalText.innerText = "SOBRE O GT SCANNER (FIFA 12 MIN):\n\nEste sistema processa estatísticas avançadas para a análise de confrontos e tendências de gols.\n\n• Competição monitorada: E-Soccer Fifa 12 Minutos - GT Leagues.\n• Atualização dos dados: Realizada de forma automatizada diariamente às 10h, 18h e 22h.\n\n--- \n\nLÓGICA E INTELIGÊNCIA DO ALGORITMO:\n\n1. O Mercado Funciona por Fases (Sequências):\nNo futebol real, padrões duram meses. No Fifa, os algoritmos operam em ciclos. Um time com excelente média histórica pode entrar em uma 'seca' de 2 ou 3 dias. Se o sistema usa apenas o histórico geral, ele fica 'preso ao passado' e ignora que o time travou. Com 40% de peso recente, o sistema percebe e reage rapidamente às mudanças de fase.\n\n2. Redução de Falsos Positivos em Dias Retraídos:\nEm momentos onde as defesas levam vantagem (muitos jogos 0x0 ou 1x0), o peso do momento atual puxa o Score para baixo automaticamente, impedindo entradas arriscadas baseadas apenas em confrontos de semanas atrás.\n\n3. O Ponto Doce (Equilíbrio Ideal):\n• 40% Frequência Geral: Olha o macro e a compatibilidade histórica das equipes.\n• 40% Histórico Recente: Dá sensibilidade de curto prazo para o comportamento das últimas horas.\n• 20% Confiança: Mede se a amostragem de dados é estatisticamente sólida.";
         }
         
         document.getElementById('modal-msg').classList.remove('hidden');
@@ -1104,11 +1104,14 @@
                 `Padrão ofensivo detectado. As últimas partidas mostram um confronto aberto, com equipes buscando o gol durante todo o jogo. Sugestão: Over ${sugestaoOver} gols.`,
                 `O histórico recente indica alta intensidade ofensiva, aumentando significativamente a probabilidade de um jogo com muitos gols. Sugestão: Over ${sugestaoOver} gols.`,
                 `Os dados identificam um confronto de ritmo acelerado, com grande volume de oportunidades criadas. Sugestão: Over ${sugestaoOver} gols.`,
-                `O comportamento das equipes nas últimas partidas demonstra um cenário favorável para um placar movimentado. Sugestão: Over ${sugestaoOver} gols.`
+                `O comportamento das equipes nas últimas partidas demonstra um cenário favorável para um placar movimentado. Sugestão: Over ${sugestaoOver} gols.`,
+                `As estatísticas recentes apontam uma forte tendência para um jogo aberto, com ataques levando vantagem sobre as defesas. Sugestão: Over ${sugestaoOver} gols.`
             ] : [
                 `Padrão defensivo identificado. As últimas partidas demonstram um confronto mais truncado, com poucas oportunidades claras de gol. Sugestão: Over ${sugestaoOver} gols.`,
                 `Os dados recentes revelam equipes que priorizam a organização defensiva, reduzindo o volume ofensivo da partida. Sugestão: Over ${sugestaoOver} gols.`,
-                `O histórico aponta um jogo equilibrado, onde as defesas têm conseguido neutralizar a maioria das ações ofensivas. Sugestão: Over ${sugestaoOver} gols.`
+                `O histórico aponta um jogo equilibrado, onde as defesas têm conseguido neutralizar a maioria das ações ofensivas. Sugestão: Over ${sugestaoOver} gols.`,
+                `As estatísticas indicam uma tendência de ritmo mais controlado, com poucas finalizações e placares discretos. Sugestão: Over ${sugestaoOver} gols.`,
+                `Os últimos confrontos apresentam um comportamento tático, com equipes estudando bastante as jogadas antes de atacar. Sugestão: Over ${sugestaoOver} gols.`
             ];
             document.getElementById('sugestao').innerText = mensagens[Math.floor(Math.random() * mensagens.length)];
         } else {
