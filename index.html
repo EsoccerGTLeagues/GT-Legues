@@ -3,1216 +3,1040 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner 8 Minutos — Analisador de Confrontos</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo.png">
+    <title>GT Scanner - Analisador e Radar Ao Vivo FIFA 12 Min</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --bg-page: #090d16;
-            --card-bg: #121826;
-            --card-border: rgba(255, 255, 255, 0.07);
-            --input-bg: #182235;
-            --input-border: #243048;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --brand-orange: #ff8c00;
-            --brand-orange-light: rgba(255, 140, 0, 0.15);
-            --brand-orange-glow: rgba(255, 140, 0, 0.35);
-            --accent-green: #10b981;
-            --accent-green-light: rgba(16, 185, 129, 0.15);
-            --accent-yellow: #f59e0b;
-            --accent-red: #ef4444;
-            --btn-vip: #0284c7;
-            --header-bg: rgba(18, 24, 38, 0.85);
-            --radius-card: 18px;
-            --radius-elem: 12px;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-        body.light {
-            --bg-page: #f1f5f9;
-            --card-bg: #ffffff;
-            --card-border: rgba(0, 0, 0, 0.08);
-            --input-bg: #f8fafc;
-            --input-border: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --header-bg: rgba(255, 255, 255, 0.9);
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body {
-            background: var(--bg-page);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .hidden { display: none !important; }
-
-        /* Container de Login e Cadastro */
-        .auth-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
-            padding: 20px 0;
-        }
-
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 140, 0, 0.4);
-            border-radius: 24px;
-            padding: 36px 30px;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: var(--shadow), 0 0 40px rgba(255, 140, 0, 0.1);
-            backdrop-filter: blur(12px);
-        }
-
-        .auth-card img {
-            max-width: 240px;
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-        .auth-card h2 {
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .auth-card p.subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .auth-card input {
-            width: 100%;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border-radius: var(--radius-elem);
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            transition: border 0.2s, box-shadow 0.2s;
-        }
-
-        .auth-card input:focus {
-            outline: none;
-            border-color: var(--brand-orange);
-            box-shadow: 0 0 0 3px var(--brand-orange-glow);
-        }
-
-        .btn-brand {
-            width: 100%;
-            padding: 14px;
-            border-radius: var(--radius-elem);
-            border: none;
-            background: linear-gradient(135deg, #ff8c00 0%, #ea580c 100%);
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.35);
-        }
-
-        .btn-brand:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.45);
-        }
-
-        .auth-links {
-            margin-top: 16px;
-            font-size: 0.84rem;
-            color: var(--text-muted);
-        }
-
-        .auth-links a {
-            color: var(--brand-orange);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .auth-links a:hover {
-            text-decoration: underline;
-        }
-
-        /* App Header */
-        .app-header {
-            background: var(--header-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .header-brand img {
-            height: 38px;
-            width: auto;
-            border-radius: 6px;
-        }
-
-        .header-title-box h1 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: var(--brand-orange-light);
-            color: var(--brand-orange);
-            border: 1px solid rgba(255, 140, 0, 0.25);
-        }
-
-        /* Navigation Tabs */
-        .nav-tabs {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 4px;
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-        }
-
-        .nav-tab-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 0.84rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-tab-btn.active {
-            background: var(--brand-orange);
-            color: #000000;
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
-        }
-
-        .nav-tab-btn.tab-live.active {
-            background: #ef4444;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px #ef4444;
-            animation: pulse-live 1.5s infinite;
-        }
-
-        @keyframes pulse-live {
-            0% { transform: scale(0.9); opacity: 0.8; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.8; }
-        }
-
-        /* H2H VS Banner */
-        .h2h-banner {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 8px 18px;
-            border-radius: 14px;
-            border: 1px solid var(--card-border);
-        }
-
-        .player-block {
-            text-align: center;
-        }
-
-        .player-name {
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: var(--text-main);
-        }
-
-        .bolinhas-container {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-        }
-
-        .bola-historico {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 800;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .bola-vitoria { background-color: var(--accent-green); }
-        .bola-derrota { background-color: var(--accent-red); }
-        .bola-empate { background-color: #64748b; }
-        .bola-vazia { background-color: #334155; border: 1px solid #475569; }
-
-        .vs-tag {
-            font-weight: 800;
-            font-size: 0.8rem;
-            color: var(--brand-orange);
-            background: var(--brand-orange-light);
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
-
-        /* Action Buttons */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-icon {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--card-border);
-            background: var(--card-bg);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-icon:hover {
-            border-color: var(--brand-orange);
-            color: var(--brand-orange);
-        }
-
-        /* Main Top Grid (Selection Card + Last 5 Matches Card Side-by-Side) */
-        .top-selection-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 900px) {
-            .top-selection-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Control Search Bar */
-        .controls-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 14px;
-        }
-
-        .inputs-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .input-group {
-            flex: 1;
-            min-width: 160px;
-            position: relative;
-        }
-
-        .controls-card input, .controls-card select {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: var(--radius-elem);
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 0.92rem;
-        }
-
-        .controls-card input:focus, .controls-card select:focus {
-            outline: none;
-            border-color: var(--brand-orange);
-        }
-
-        .swap-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-muted);
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-
-        .swap-btn:hover {
-            color: var(--brand-orange);
-            border-color: var(--brand-orange);
-            transform: rotate(180deg);
-        }
-
-        .btn-analisar {
-            padding: 12px 24px;
-            border-radius: var(--radius-elem);
-            border: none;
-            background: linear-gradient(135deg, #ff8c00 0%, #d97706 100%);
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(255, 140, 0, 0.35);
-            transition: transform 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-analisar:hover {
-            transform: translateY(-2px);
-        }
-
-        .sugestao-container {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 140, 0, 0.08);
-            border: 1px dashed rgba(255, 140, 0, 0.3);
-            border-radius: 12px;
-            font-size: 0.88rem;
-            color: var(--brand-orange);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        /* Card dos Últimos 5 Confrontos com Placar */
-        .last5-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .last5-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .last5-title {
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .last5-item {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.82rem;
-            transition: all 0.2s;
-        }
-
-        .last5-item:hover {
-            border-color: rgba(255, 140, 0, 0.3);
-        }
-
-        .last5-matchup {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .last5-score-badge {
-            font-family: monospace;
-            font-weight: 800;
-            padding: 2px 8px;
-            background: #090d16;
-            border-radius: 6px;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            font-size: 0.85rem;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-elem);
-            padding: 16px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .stat-card:hover {
-            border-color: rgba(255, 140, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .stat-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: var(--text-main);
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
-
-        .stat-pct {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--brand-orange);
-        }
-
-        .progress-bar-bg {
-            background: #243048;
-            height: 6px;
-            border-radius: 3px;
-            width: 100%;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* 4 Columns Over Matrix */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 960px) {
-            .matrix-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 600px) {
-            .matrix-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .matrix-col {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .matrix-header {
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: var(--brand-orange);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .bar-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.82rem;
-        }
-
-        .bar-label {
-            min-width: 58px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .bar-track {
-            flex: 1;
-            height: 10px;
-            background: #1e293b;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .bar-fill {
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }
-
-        .bar-value {
-            min-width: 38px;
-            text-align: right;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-
-        .btn-vip-lock {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-            color: #ffffff;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 700;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 6px 10px;
-            font-size: 0.75rem;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-            width: 100%;
-        }
-
-        .btn-vip-lock:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 14px rgba(2, 132, 199, 0.4);
-        }
-
-        .vip-locked-item {
-            background: rgba(2, 132, 199, 0.06);
-            border: 1px dashed rgba(2, 132, 199, 0.3);
-            padding: 8px 12px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        /* ABA AO VIVO STYLES */
-        .live-banner {
-            background: linear-gradient(135deg, #131b2e 0%, #0d121f 100%);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .live-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .live-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-card);
-            padding: 18px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .live-card.confirmed-alert {
-            border-color: var(--accent-green);
-            background: linear-gradient(135deg, #121826 0%, #0e2023 100%);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
-        }
-
-        .badge-confirmed {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff;
-            font-size: 0.68rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-bottom-left-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .live-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        .live-card-body {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-            text-align: center;
-        }
-
-        .live-team-name {
-            font-size: 0.88rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .live-player-name {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--brand-orange);
-        }
-
-        .live-score-box {
-            background: #090d16;
-            border: 1px solid var(--card-border);
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .live-suggestion-box {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.82rem;
-        }
-
-        .live-tag-trigger {
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .trigger-1t { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-        .trigger-2t { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-
-        /* Footer */
-        footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 24px;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--card-border);
-            background: var(--bg-page);
-        }
-
-        footer a {
-            color: var(--brand-orange);
-            text-decoration: none;
-            margin: 0 8px;
-            font-weight: 600;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-box {
-            background: #131b2e;
-            border: 1px solid rgba(255, 140, 0, 0.4);
-            border-radius: 20px;
-            padding: 28px;
-            max-width: 680px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            color: #f8fafc;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--brand-orange);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-body {
-            font-size: 0.92rem;
-            line-height: 1.6;
-            color: #cbd5e1;
-            white-space: pre-line;
-            margin-bottom: 24px;
-        }
-
-        .modal-close-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: var(--radius-elem);
-            border: none;
-            background: var(--brand-orange);
-            color: #000000;
-            font-weight: 800;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .modal-close-btn:hover {
-            background: #ffa126;
-        }
-    </style>
-<script src="/_aistudio-iframe.js?v=2f1c016a"></script></head>
+<style>
+    :root {
+        --bg-color: #080c14;
+        --card-bg: #111827;
+        --card-border: #1f293d;
+        --input-bg: #0b111e;
+        --text-color: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #ff8c00;
+        --accent-hover: #ffa024;
+        --brand-color: #ff8c00;
+        --sugestao-color: #fbbf24;
+        --green-color: #10b981;
+        --yellow-color: #f59e0b;
+        --red-color: #ef4444;
+        --cyan-color: #06b6d4;
+        --shadow-elevation: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --card-border: #e2e8f0;
+        --input-bg: #f1f5f9;
+        --text-color: #0f172a;
+        --text-muted: #64748b;
+        --accent: #ea580c;
+        --accent-hover: #f97316;
+        --brand-color: #ea580c;
+        --sugestao-color: #b45309;
+        --green-color: #059669;
+        --yellow-color: #d97706;
+        --red-color: #dc2626;
+        --cyan-color: #0891b2;
+        --shadow-elevation: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { 
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        padding: 18px 16px; 
+        background: var(--bg-color); 
+        color: var(--text-color); 
+        transition: background 0.3s ease, color 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-image: radial-gradient(circle at top right, rgba(255, 140, 0, 0.06) 0%, transparent 40%), radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.04) 0%, transparent 40%);
+    }
+
+    .hidden { display: none !important; }
+
+    #login-container, #cadastro-container {
+        max-width: 440px; 
+        margin: 40px auto;
+        background: var(--card-bg); 
+        padding: 36px 30px; 
+        border-radius: 24px;
+        color: var(--text-color); 
+        text-align: center;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation);
+        position: relative;
+        overflow: hidden;
+    }
+
+    #login-container::before, #cadastro-container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff8c00, #06b6d4, #10b981);
+    }
+
+    .auth-logo {
+        max-width: 220px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto 12px auto;
+        display: block;
+    }
+
+    input, select { 
+        padding: 12px 14px; 
+        border-radius: 12px; 
+        border: 1px solid var(--card-border); 
+        font-size: 14px; 
+        background: var(--input-bg);
+        color: var(--text-color);
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+
+    #login-container input, #cadastro-container input { 
+        width: 100%; margin: 8px 0; box-sizing: border-box; 
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+    }
+
+    #btn-login, #btn-cadastrar {
+        width: 100%; 
+        padding: 13px; 
+        border-radius: 12px; 
+        border: none;
+        background: linear-gradient(135deg, var(--accent) 0%, #ffaa40 100%); 
+        color: #0b0f17; 
+        font-weight: 700; 
+        font-size: 15px;
+        cursor: pointer; 
+        margin-top: 14px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    #btn-login:hover, #btn-cadastrar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 140, 0, 0.4);
+    }
+
+    .app-container {
+        max-width: 1240px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .header-container {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 16px 22px; 
+        background: var(--card-bg); 
+        border-radius: 20px;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation);
+        margin-bottom: 18px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .brand-title-box { display: flex; align-items: center; gap: 12px; }
+    .header-logo { height: 38px; width: auto; }
+    .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid var(--card-border);
+    }
+
+    .btn-header {
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--card-border);
+        background: var(--input-bg);
+        color: var(--text-color);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+        background: rgba(255, 140, 0, 0.1);
+        border-color: var(--accent);
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 18px;
+        background: var(--card-bg);
+        padding: 6px;
+        border-radius: 16px;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation);
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        flex: 1;
+        min-width: 160px;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 13.5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--text-color); background: rgba(255, 255, 255, 0.04); }
+
+    .tab-btn.active {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(255, 140, 0, 0.05) 100%);
+        color: var(--accent);
+        border: 1px solid rgba(255, 140, 0, 0.3);
+    }
+
+    .tab-btn.active.live {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        animation: pulseAnimation 1.6s infinite;
+    }
+
+    @keyframes pulseAnimation {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .controls { 
+        background: var(--card-bg); 
+        padding: 20px 24px; 
+        border-radius: 20px; 
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-elevation); 
+        margin-bottom: 22px; 
+        display: flex; 
+        gap: 12px; 
+        flex-wrap: wrap; 
+        align-items: center; 
+    }
+
+    .input-jogador { flex: 1; min-width: 180px; font-weight: 600; }
+    .vs-separator { font-weight: 800; color: var(--accent); font-size: 14px; padding: 0 4px; }
+
+    .btn-analisar {
+        background: linear-gradient(135deg, var(--accent) 0%, #ffaa40 100%);
+        color: #0b0f17;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(255, 140, 0, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-analisar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(255, 140, 0, 0.4);
+    }
+
+    .top-banners-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 960px) { .top-banners-grid { grid-template-columns: 1fr; } }
+
+    #historico-confronto {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px 22px;
+        box-shadow: var(--shadow-elevation);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .player-profile { text-align: center; min-width: 120px; }
+    .player-name { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+    .player-shield { width: 48px; height: 48px; display: block; margin: 0 auto; }
+
+    .bolinhas-form { display: flex; gap: 5px; margin-top: 8px; justify-content: center; }
+    .bola-historico { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
+    .bola-vitoria { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+    .bola-derrota { background-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
+    .bola-empate { background-color: #94a3b8; }
+    .bola-vazia { background-color: #334155; border: 1px solid #475569; }
+
+    #card-ultimos-placares {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 18px 20px;
+        box-shadow: var(--shadow-elevation);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .card-placares-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 8px;
+    }
+
+    .card-placares-header h4 {
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+    }
+
+    .lista-placares { display: flex; flex-direction: column; gap: 6px; }
+
+    .item-placar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        background: rgba(11, 15, 23, 0.6);
+        border: 1px solid var(--card-border);
+    }
+
+    .item-placar.seco {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .score-badge {
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: #1e293b;
+        color: #ffffff;
+    }
+
+    .validador-status {
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .validador-sucesso {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #34d399;
+    }
+
+    .validador-alerta {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+    }
+
+    /* Painel de Assertividade */
+    .painel-assertivo-wrapper {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.06) 0%, rgba(6, 182, 212, 0.04) 100%);
+        border: 1px solid rgba(255, 140, 0, 0.25);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 22px;
+        box-shadow: var(--shadow-elevation);
+    }
+
+    .painel-assertivo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .painel-assertivo-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .badge-top-assertividade {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .grid-assertivo-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+    }
+
+    .card-destaque-assertivo {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .card-destaque-assertivo.ouro {
+        border-color: rgba(16, 185, 129, 0.4);
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, var(--card-bg) 100%);
+    }
+
+    .card-destaque-assertivo.prata {
+        border-color: rgba(245, 158, 11, 0.4);
+        background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--card-bg) 100%);
+    }
+
+    .badge-assertividade-tag {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 6px;
+        align-self: flex-start;
+    }
+    .tag-ouro { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-prata { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    .suggestion-container {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 16px 20px;
+        background: rgba(255, 140, 0, 0.08);
+        border: 1px solid rgba(255, 140, 0, 0.25);
+        border-radius: 16px;
+        font-size: 14px;
+        color: var(--sugestao-color);
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .stats { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); 
+        gap: 14px; 
+        margin-bottom: 24px; 
+    }
+
+    .card { 
+        background: var(--card-bg); 
+        padding: 16px 18px; 
+        border-radius: 16px; 
+        box-shadow: var(--shadow-elevation); 
+        border: 1px solid var(--card-border); 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .card-title { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+    .card-value { font-size: 20px; font-weight: 800; }
+
+    .stat-progress-bar {
+        background: rgba(148, 163, 184, 0.15);
+        height: 6px;
+        width: 100%;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+
+    .stat-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+    .grid-columns { 
+        grid-column: 1 / -1; 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 18px; 
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 22px;
+    }
+
+    .grid-column-box h3 {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .goal-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 12px; }
+    .goal-label { min-width: 65px; font-weight: 600; color: var(--text-muted); }
+    .goal-track { background: rgba(148, 163, 184, 0.15); height: 10px; flex: 1; border-radius: 5px; overflow: hidden; }
+    .goal-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+    .goal-percent { min-width: 40px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+    .btn-vip { 
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); 
+        color: white; 
+        border-radius: 8px; 
+        text-align: center; 
+        cursor: pointer; 
+        font-weight: 700; 
+        border: none; 
+        display: block; 
+        margin: 2px 0; 
+        padding: 6px 10px; 
+        font-size: 11px; 
+        text-decoration: none; 
+    }
+
+    /* Live Styling */
+    .live-dashboard-header {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .live-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #34d399;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .live-status-pill.offline {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #f87171;
+    }
+
+    .refresh-timer-badge {
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--input-bg);
+        padding: 6px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--card-border);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .live-matches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .live-match-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow-elevation);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .live-match-card:hover {
+        border-color: rgba(255, 140, 0, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .live-match-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 10px;
+    }
+
+    .live-clock {
+        color: #ef4444;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .live-teams-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .live-team-col { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .live-player-title { font-weight: 800; font-size: 15px; }
+    .live-subteam { font-size: 12px; color: var(--text-muted); }
+
+    .live-score-box {
+        background: var(--input-bg);
+        border: 1px solid var(--card-border);
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .live-metrics-box {
+        background: rgba(11, 15, 23, 0.7);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .live-metric-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+
+    .btn-carregar-h2h {
+        background: rgba(255, 140, 0, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(255, 140, 0, 0.3);
+        padding: 10px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-carregar-h2h:hover { background: var(--accent); color: #0b0f17; }
+
+    .script-guide-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 24px;
+        line-height: 1.6;
+    }
+
+    .code-snippet {
+        background: #070a10;
+        border: 1px solid #1e293b;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: #38bdf8;
+        overflow-x: auto;
+        margin: 10px 0 16px 0;
+        user-select: all;
+    }
+
+    @media (max-width: 860px) { .grid-columns { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { 
+        .controls { flex-direction: column; align-items: stretch; } 
+        .stats { grid-template-columns: repeat(2, 1fr); } 
+        .header-container { flex-direction: column; align-items: stretch; text-align: center; }
+        .header-controls { justify-content: center; }
+        .live-matches-grid { grid-template-columns: 1fr; }
+    }
+
+    footer {
+        margin-top: auto;
+        text-align: center; 
+        padding: 24px 16px; 
+        font-size: 13px; 
+        color: var(--text-muted); 
+        border-top: 1px solid var(--card-border); 
+    }
+
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    #modal-msg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
+        z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;
+    }
+
+    .modal-box {
+        background: var(--card-bg); padding: 28px; border-radius: 20px; 
+        border: 1px solid var(--card-border); max-width: 700px; width: 100%; max-height: 85vh; overflow-y: auto;
+    }
+
+    .modal-close-btn {
+        width: 100%; padding: 12px; border-radius: 12px; border: none; 
+        background: var(--accent); color: #0b0f17; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 18px;
+    }
+</style>
+</head>
 <body>
 
-<!-- TELA DE LOGIN -->
-<div id="login-container" class="auth-wrapper">
-    <div class="auth-card">
-        <img src="logo.png" alt="Scanner 8 Minutos">
-        <h2>Acesse sua conta</h2>
-        <p class="subtitle">Faça login para analisar confrontos e tendências</p>
-        
-        <form onsubmit="event.preventDefault(); fazerLogin();">
-            <input type="text" id="input-user" placeholder="E-mail ou usuário" required autocomplete="username">
-            <input type="password" id="input-pass" placeholder="Senha" required autocomplete="current-password">
-            
-            <button type="submit" id="btn-login" class="btn-brand">Entrar no Sistema</button>
-        </form>
-
-        <div class="auth-links">
-            <p>Ainda não tem uma conta? <a href="#" onclick="event.preventDefault(); document.getElementById('login-container').classList.add('hidden'); document.getElementById('cadastro-container').classList.remove('hidden');">Cadastre-se grátis</a></p>
-            <p style="margin-top: 10px;">Suporte Telegram: <a href="https://t.me/SGEEstoqly" target="_blank">@SGEEstoqly</a></p>
-        </div>
-    </div>
+<!-- LOGIN -->
+<div id="login-container">
+    <img src="logo.png" alt="Logo GT Scanner" class="auth-logo" onerror="this.src='https://via.placeholder.com/280x100/131b28/ff8c00?text=GT+SCANNER'">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Acesse sua conta</h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Entre para acessar o scanner estatístico e radar ao vivo</p>
+    <input type="text" id="input-user" placeholder="E-mail ou usuário cadastrado">
+    <input type="password" id="input-pass" placeholder="Sua senha">
+    <button id="btn-login" onclick="fazerLogin()">Entrar na Plataforma</button>
+    <p style="margin-top: 14px; font-size: 13px; color: var(--text-muted);">
+        Ainda não tem conta? <a href="#" onclick="event.preventDefault(); document.getElementById('login-container').classList.add('hidden'); document.getElementById('cadastro-container').classList.remove('hidden');" style="color: var(--accent); font-weight: 700;">Cadastre-se</a>
+    </p>
 </div>
 
-<!-- TELA DE CADASTRO -->
-<div id="cadastro-container" class="auth-wrapper hidden">
-    <div class="auth-card">
-        <img src="logo.png" alt="Scanner 8 Minutos">
-        <h2>Criar Conta</h2>
-        <p class="subtitle">Preencha os dados abaixo para ter acesso imediato</p>
-        
-        <form onsubmit="event.preventDefault(); cadastrarUsuario();">
-            <input type="text" id="cad-email" placeholder="E-mail ou usuário" maxlength="60" required autocomplete="email">
-            <input type="password" id="cad-pass" placeholder="Senha (máx 8 dígitos)" maxlength="8" required autocomplete="new-password">
-            
-            <button type="submit" id="btn-cadastrar" class="btn-brand">Cadastrar Conta</button>
-        </form>
-
-        <div class="auth-links">
-            <p><a href="#" onclick="event.preventDefault(); document.getElementById('cadastro-container').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden');">← Voltar para o Login</a></p>
-        </div>
-    </div>
+<!-- CADASTRO -->
+<div id="cadastro-container" class="hidden">
+    <img src="logo.png" alt="Logo GT Scanner" class="auth-logo" onerror="this.src='https://via.placeholder.com/280x100/131b28/ff8c00?text=GT+SCANNER'">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Criar Conta Gratuita</h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Cadastre seu e-mail para ter acesso</p>
+    <input type="email" id="cad-email" placeholder="Seu melhor e-mail" maxlength="60">
+    <input type="password" id="cad-pass" placeholder="Senha (máx 8 dígitos)" maxlength="8">
+    <button id="btn-cadastrar" onclick="cadastrarUsuario()">Criar Minha Conta</button>
+    <p style="margin-top: 14px; font-size: 13px;">
+        <a href="#" onclick="event.preventDefault(); document.getElementById('cadastro-container').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden');" style="color: var(--accent); font-weight: 700;">← Voltar para o Login</a>
+    </p>
 </div>
 
-<!-- CONTEÚDO PRINCIPAL (DASHBOARD) -->
-<div id="main-content" class="hidden">
-    <!-- Header -->
-    <header class="app-header">
-        <div class="header-brand">
-            <img src="logo.png" alt="Scanner 8 Minutos">
-            <div class="header-title-box">
-                <h1>Scanner 8 Minutos & Battle Voltas</h1>
-                <div id="status-assinatura" class="status-badge">
-                    <span>⚡</span> Carregando status...
-                </div>
+<!-- CONTEÚDO PRINCIPAL -->
+<div id="main-content" class="hidden app-container">
+    <div class="header-container">
+        <div class="brand-title-box">
+            <img src="logo.png" alt="GT Scanner" class="header-logo" onerror="this.style.display='none'">
+            <div>
+                <h2 style="font-size: 18px; font-weight: 800; line-height: 1.2;">GT Scanner & Radar Ao Vivo</h2>
+                <div style="font-size: 12px; color: var(--text-muted);">FIFA GT Leagues 12 Min / Bet365 9222</div>
             </div>
         </div>
 
-<!-- 
-        <div class="nav-tabs">
-            <button id="tab-btn-analisador" class="nav-tab-btn active" onclick="trocarAbaPrincipal('analisador')">
-                <span>⚡</span> Analisador
+        <div class="header-controls">
+            <div id="status-assinatura" class="badge-status">
+                <span>🔄</span> Carregando status...
+            </div>
+            <button class="btn-header" onclick="abrirModalInfo('sobre')">ℹ️ Sobre o Robô</button>
+            <button class="btn-header" onclick="document.body.classList.toggle('light')">🌓 Tema</button>
+            <a href="pagamento.html" class="btn-header" style="text-decoration: none; border-color: var(--accent); color: var(--accent);">💎 Assinar VIP</a>
+        </div>
+    </div>
+
+<!-- Navegação de Abas 
+    <div class="tabs-nav">
+        <button id="tab-h2h-btn" class="tab-btn active" onclick="trocarAba('h2h')">
+            <span>🎯</span> Analisador de Confrontos H2H
+        </button>
+        <button id="tab-live-btn" class="tab-btn live" onclick="trocarAba('live')">
+            <span class="pulse-dot"></span> Radar Ao Vivo (Bet365 9222)
+        </button>
+        <button id="tab-script-btn" class="tab-btn" onclick="trocarAba('script')">
+            <span>🤖</span> Script Python & Guia
+        </button>
+    </div>
+-->
+    <!-- ABA 1: H2H -->
+    <div id="aba-h2h">
+        <div class="controls">
+            <input list="listaJogadores" id="jogadorA" class="input-jogador" placeholder="Selecione o Jogador A..."> 
+            <span class="vs-separator">VS</span> 
+            <input list="listaJogadores" id="jogadorB" class="input-jogador" placeholder="Selecione o Jogador B...">
+            <datalist id="listaJogadores"></datalist>
+
+            <select id="limite" style="font-weight: 600;">
+                <option value="todos">Todos os confrontos</option>
+                <option value="10">Últimos 10 jogos</option>
+                <option value="20">Últimos 20 jogos</option>
+                <option value="30">Últimos 30 jogos</option>
+                <option value="40">Últimos 40 jogos</option>
+                <option value="50">Últimos 50 jogos</option>
+                <option value="60">Últimos 60 jogos</option>
+                <option value="70">Últimos 70 jogos</option>
+                <option value="80">Últimos 80 jogos</option>
+            </select>
+            <button class="btn-analisar" onclick="analisar()">
+                <span>⚡ Analisar Confrontos</span>
             </button>
-            <button id="tab-btn-aovivo" class="nav-tab-btn tab-live" onclick="trocarAbaPrincipal('aovivo')">
-                <span class="live-dot"></span> Ao Vivo
-            </button>
         </div>
-    -->
 
-        <!-- H2H Live Banner -->
-        <div id="historico-confronto" class="h2h-banner" style="display: none;">
-            <div class="player-block">
-                <div class="player-name" id="nome-jogadorA">Jogador A</div>
-                <div id="bolinhas-A" class="bolinhas-container"></div>
+        <!-- Painel de Assertividade -->
+        <div id="painel-assertivo" class="painel-assertivo-wrapper" style="display: none;">
+            <div class="painel-assertivo-header">
+                <div class="painel-assertivo-title">
+                    <span>⭐</span>
+                    <span>ENTRADAS RECOMENDADAS DE ALTA ASSERTIVIDADE</span>
+                </div>
+                <div id="badge-melhor-mercado" class="badge-top-assertividade">
+                    Calculando melhor linha...
+                </div>
             </div>
-
-            <div class="vs-tag">VS</div>
-
-            <div class="player-block">
-                <div class="player-name" id="nome-jogadorB">Jogador B</div>
-                <div id="bolinhas-B" class="bolinhas-container"></div>
-            </div>
+            <div id="grid-assertivo-cards" class="grid-assertivo-cards"></div>
         </div>
 
-        <!-- Actions -->
-        <div class="header-actions">
-            <a href="pagamento.html" class="btn-icon" style="border-color: rgba(255,140,0,0.4); color: var(--brand-orange); text-decoration: none;">💎 Assinar VIP</a>
-            <button class="btn-icon" onclick="abrirModalInfo('sobre')">ℹ️ Sobre</button>
-            <button class="btn-icon" onclick="document.body.classList.toggle('light')">🌓 Tema</button>
-        </div>
-    </header>
-
-    <!-- ABA 1: ANALISADOR DE CONFRONTOS -->
-    <div id="secao-analisador">
-        <!-- Top Selection Grid: Controls Card (Left) + Last 5 Matches with Scores (Right) -->
-        <div class="top-selection-grid">
-            
-            <!-- Controls Card -->
-            <div class="controls-card">
-                <div class="inputs-row">
-                    <div class="input-group">
-                        <input list="listaJogadores" id="jogadorA" placeholder="Jogador A (ex: Dave)"> 
-                    </div>
-
-                    <button type="button" class="swap-btn" title="Inverter jogadores" onclick="inverterJogadores()">⇄</button>
-
-                    <div class="input-group">
-                        <input list="listaJogadores" id="jogadorB" placeholder="Jogador B (ex: Tony)">
-                    </div>
-
-                    <datalist id="listaJogadores"></datalist>
-
-                    <div style="min-width: 130px;">
-                        <select id="limite">
-                            <option value="todos">Todos os Jogos</option>
-                            <option value="10">Últimos 10</option>
-                            <option value="20">Últimos 20</option>
-                            <option value="30">Últimos 30</option>
-                            <option value="40">Últimos 40</option>
-                            <option value="50">Últimos 50</option>
-                            <option value="60">Últimos 60</option>
-                            <option value="70">Últimos 70</option>
-                            <option value="80">Últimos 80</option>
-                        </select>
-                    </div>
-
-                    <button class="btn-analisar" onclick="analisar()">⚡ Analisar Confrontos</button>
+        <!-- Grid Top Banners -->
+        <div id="top-banners-wrapper" class="top-banners-grid" style="display: none;">
+            <div id="historico-confronto">
+                <div class="player-profile">
+                    <div class="player-name" id="nome-jogadorA">Jogador A</div>
+                    <img id="img-jogadorA" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'><defs><linearGradient id='gA' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff8c00'/><stop offset='100%25' stop-color='%23ea580c'/></linearGradient></defs><path d='M50 5 L90 20 L90 60 C90 90 50 115 50 115 C50 115 10 90 10 60 L10 20 Z' fill='url(%23gA)' stroke='%23ffaa40' stroke-width='4'/><path d='M50 15 L80 27 L80 58 C80 82 50 102 50 102 C50 102 20 82 20 58 L20 27 Z' fill='%23131b28' opacity='0.85'/><circle cx='50' cy='55' r='16' fill='%23ff8c00'/><path d='M50 43 L53 51 L62 51 L55 56 L58 65 L50 60 L42 65 L45 56 L38 51 L47 51 Z' fill='%230b0f17'/></svg>" class="player-shield" alt="Escudo A">
+                    <div id="bolinhas-A" class="bolinhas-form"></div>
                 </div>
 
-                <div id="sugestao-wrapper" style="width: 100%; display: none;">
-                    <div class="sugestao-container">
-                        <span>🎯 <strong>Sugestão da Inteligência:</strong></span>
-                        <span id="sugestao"></span>
-                    </div>
+                <div style="text-align: center;">
+                    <div style="font-weight: 800; font-size: 22px; color: var(--accent); letter-spacing: 1px;">VS</div>
+                    <div id="h2h-resumo-rapido" style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">H2H Geral</div>
+                </div>
+
+                <div class="player-profile">
+                    <div class="player-name" id="nome-jogadorB">Jogador B</div>
+                    <img id="img-jogadorB" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'><defs><linearGradient id='gB' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230284c7'/><stop offset='100%25' stop-color='%230369a1'/></linearGradient></defs><path d='M50 5 L90 20 L90 60 C90 90 50 115 50 115 C50 115 10 90 10 60 L10 20 Z' fill='url(%23gB)' stroke='%2338bdf8' stroke-width='4'/><path d='M50 15 L80 27 L80 58 C80 82 50 102 50 102 C50 102 20 82 20 58 L20 27 Z' fill='%23131b28' opacity='0.85'/><circle cx='50' cy='55' r='16' fill='%230284c7'/><path d='M50 43 L53 51 L62 51 L55 56 L58 65 L50 60 L42 65 L45 56 L38 51 L47 51 Z' fill='%230b0f17'/></svg>" class="player-shield" alt="Escudo B">
+                    <div id="bolinhas-B" class="bolinhas-form"></div>
                 </div>
             </div>
 
-            <!-- Card dos Últimos 5 Confrontos com Placar -->
-            <div class="last5-card">
-                <div class="last5-header">
-                    <div class="last5-title">
-                        <span>⚽</span> Últimos 5 Confrontos Diretos
-                    </div>
-                    <span id="last5-total-badge" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Aguardando busca</span>
+            <div id="card-ultimos-placares">
+                <div class="card-placares-header">
+                    <h4>⚡ ÚLTIMOS 5 PLACARES</h4>
+                    <span style="font-size: 11px; color: var(--text-muted);">Consistência Recente</span>
                 </div>
-
-                <div id="last5-container">
-                    <div style="text-align: center; padding: 24px 10px; color: var(--text-muted); font-size: 0.8rem;">
-                        Selecione os jogadores e clique em <b>Analisar</b> para ver o placar detalhado dos 5 confrontos recentes.
-                    </div>
-                </div>
+                <div id="lista-ultimos-placares" class="lista-placares"></div>
+                <div id="validador-zerados" class="validador-status"></div>
             </div>
-
         </div>
 
-        <!-- Resultados -->
-        <div id="resultado"></div>
+        <div id="sugestao-container" style="display: none; margin-bottom: 20px;">
+            <div class="suggestion-container">
+                <span style="font-size: 20px;">💡</span>
+                <div id="sugestao"></div>
+            </div>
+        </div>
+
+        <div id="resultado" class="stats"></div>
     </div>
 
-    <!-- ABA 2: JOGOS AO VIVO (SCANNER & TELEGRAM) -->
-    <div id="secao-aovivo" class="hidden">
-        
-        <!-- Live Status Banner -->
-        <div class="live-banner">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="live-dot"></span>
-                    <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
-                        Radar de Jogos Ao Vivo — Scanner 8 Minutos
-                    </h2>
-                    <span id="bot-status-tag" style="font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);">
-                        📡 Scanner Ativo (Filtro Tabela Supabase)
-                    </span>
+    <!-- ABA 2: RADAR AO VIVO -->
+    <div id="aba-live" class="hidden">
+        <div class="live-dashboard-header">
+            <div>
+                <div id="live-bot-status" class="live-status-pill">
+                    <span class="pulse-dot"></span>
+                    <span id="live-bot-status-text">Conectando ao Robô Python (Porta 5000 / 9222)...</span>
                 </div>
-
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-icon" onclick="testarTelegramAoVivo()" style="border-color: rgba(56,189,248,0.4); color: #38bdf8;">
-                        ✈️ Testar Telegram
-                    </button>
-                    <button class="btn-icon" onclick="carregarJogosAoVivo()">
-                        🔄 Atualizar Agora
-                    </button>
-                </div>
+                <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">
+                    Monitorando Bet365 com refresh automático de 1 minuto para evitar travamento de vozes e atualizar partidas.
+                </p>
             </div>
 
-            <div style="display: flex; gap: 16px; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; border-top: 1px solid var(--card-border); padding-top: 12px;">
-                <div>⏱️ <b>Gatilho 1º Tempo:</b> 2 minutos (Disparo ≥ 80%)</div>
-                <div>⏱️ <b>Gatilho 2º Tempo:</b> 6 minutos (Gol Limite ≥ 80%)</div>
-                <div>🛡️ <b>Filtro de Integridade:</b> Exibindo apenas jogos verificados na base do Supabase</div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div class="refresh-timer-badge">
+                    <span>⏱️ Refresh em:</span>
+                    <span id="contador-refresh-segundos" style="font-size: 14px; font-weight: 800;">60s</span>
+                </div>
+                <button class="btn-header" onclick="buscarJogosAoVivo(true)" style="border-color: var(--accent);">
+                    🔄 Forçar Atualização
+                </button>
             </div>
         </div>
 
-        <!-- Live Cards Container -->
-        <div id="live-games-container" class="live-grid">
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
-                ⚡ Carregando radar de jogos ao vivo...
-            </div>
-        </div>
-
+        <div id="lista-jogos-aovivo" class="live-matches-grid"></div>
     </div>
 
+    <!-- ABA 3: SCRIPT PYTHON GUIA -->
+    <div id="aba-script" class="hidden">
+        <div class="script-guide-box">
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">
+                🚀 Como Rodar o Robô Coletor Bet365 (Porta 9222 + Refresh 1 Minuto)
+            </h3>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 18px;">
+                Siga os 3 passos simples abaixo para coletar as partidas ao vivo sem ser bloqueado pela Bet365 e sem travar as transmissões de voz:
+            </p>
+
+            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 14px;">
+                Passo 1: Abrir o Google Chrome com a porta 9222 aberta
+            </h4>
+            <div class="code-snippet">
+chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome_debug_profile"
+            </div>
+
+            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 18px;">
+                Passo 2: Instalar as dependências do Python
+            </h4>
+            <div class="code-snippet">
+pip install selenium webdriver-manager flask flask-cors requests
+            </div>
+
+            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 18px;">
+                Passo 3: Iniciar o Script do Robô
+            </h4>
+            <div class="code-snippet">
+python bot_live_bet365.py
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Rodapé -->
 <footer>
-    <p>© 2026 Scanner 8 Minutos — Todos os direitos reservados.</p>
-    <p style="margin-top: 6px;">
-        <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')">Termos de Uso</a> • 
-        <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')">Política de Privacidade</a> • 
+    <p>© 2026 GT Scanner 8/12 Minutos - Analisador e Radar Preditivo.</p>
+    <p style="margin-top: 8px;">
+        <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')">Termos de Uso</a> &nbsp;|&nbsp; 
+        <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')">Política de Privacidade</a> &nbsp;|&nbsp;
         <a href="https://t.me/SGEEstoqly" target="_blank">Suporte Telegram</a>
     </p>
 </footer>
 
-<!-- Modal de Informações -->
-<div id="modal-msg" class="modal-overlay hidden">
+<div id="modal-msg" class="hidden">
     <div class="modal-box">
-        <div id="modal-title" class="modal-title">ℹ️ Informação</div>
-        <p id="modal-text" class="modal-body"></p>
-        <button class="modal-close-btn" onclick="document.getElementById('modal-msg').classList.add('hidden')">Entendido</button>
+        <p id="modal-text" style="font-size: 14px; white-space: pre-line; line-height: 1.6;"></p>
+        <button class="modal-close-btn" onclick="document.getElementById('modal-msg').classList.add('hidden')">Entendido / Fechar</button>
     </div>
 </div>
 
 <script>
-    // 1. Supabase Client Setup
     const SUPABASE_URL = 'https://afezbragrjyovmgwjmeq.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZXpicmFncmp5b3ZtZ3dqbWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTAzNDksImV4cCI6MjEwMDU2NjM0OX0.qIv5Fv99sjW5rTCw6MJGLMAPcgHPyevw9aYAc64Hdl4';
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.db = db;
 
     let isVip = false;
-    let abaAtual = 'analisador';
-    let listaJogadoresBanco = new Set();
+    let timerAoVivoInterval = null;
 
-    // 2. Carregar lista de jogadores
+    function trocarAba(aba) {
+        document.getElementById('aba-h2h').classList.toggle('hidden', aba !== 'h2h');
+        document.getElementById('aba-live').classList.toggle('hidden', aba !== 'live');
+        document.getElementById('aba-script').classList.toggle('hidden', aba !== 'script');
+
+        document.getElementById('tab-h2h-btn').classList.toggle('active', aba === 'h2h');
+        document.getElementById('tab-live-btn').classList.toggle('active', aba === 'live');
+        document.getElementById('tab-script-btn').classList.toggle('active', aba === 'script');
+
+        if (aba === 'live') {
+            iniciarMonitoramentoAoVivo();
+        }
+    }
+
     async function carregarDados() {
         try {
-            const { data, error } = await db
-                .from('lista_jogadores')
-                .select('nome');
-
+            const { data, error } = await db.from('view_todos_jogadores').select('nome');
             if (error) throw error;
-
             const dataList = document.getElementById('listaJogadores');
             if (data && data.length > 0) {
                 dataList.innerHTML = data.map(j => `<option value="${j.nome}">`).join('');
-                data.forEach(j => listaJogadoresBanco.add(j.nome.toLowerCase()));
             }
         } catch (err) {
-            console.error("Erro ao carregar nomes:", err);
+            console.error("Erro ao carregar jogadores:", err);
         }
     }
-
     carregarDados();
 
-    function trocarAbaPrincipal(aba) {
-        abaAtual = aba;
-        const btnAnalisador = document.getElementById('tab-btn-analisador');
-        const btnAoVivo = document.getElementById('tab-btn-aovivo');
-        const secaoAnalisador = document.getElementById('secao-analisador');
-        const secaoAoVivo = document.getElementById('secao-aovivo');
-
-        if (aba === 'analisador') {
-            btnAnalisador.classList.add('active');
-            btnAoVivo.classList.remove('active');
-            secaoAnalisador.classList.remove('hidden');
-            secaoAoVivo.classList.add('hidden');
-            if (intervalAoVivo) {
-                clearInterval(intervalAoVivo);
-                intervalAoVivo = null;
-            }
-        } else {
-            btnAoVivo.classList.add('active');
-            btnAnalisador.classList.remove('active');
-            secaoAoVivo.classList.remove('hidden');
-            secaoAnalisador.classList.add('hidden');
-            carregarJogosAoVivo();
-            if (!intervalAoVivo) {
-                intervalAoVivo = setInterval(carregarJogosAoVivo, 5000);
-            }
-        }
-    }
-
-    function inverterJogadores() {
-        const a = document.getElementById('jogadorA');
-        const b = document.getElementById('jogadorB');
-        const temp = a.value;
-        a.value = b.value;
-        b.value = temp;
-    }
-
     function abrirModalInfo(tipo) {
-        const modalTitle = document.getElementById('modal-title');
         const modalText = document.getElementById('modal-text');
-        
         if (tipo === 'termos') {
-            modalTitle.innerText = "📜 Termos de Uso";
-            modalText.innerText = "Este sistema é uma ferramenta avançada de análise de desempenho estatístico de jogadores de FIFA e E-Soccer. NÃO somos recomendação de investimento ou garantia de lucro.\n\nAo decidir realizar entradas em apostas esportivas, nunca opere às cegas; tome decisões embasadas em dados concretos. É estritamente obrigatório ter 18 anos ou mais. Apostas esportivas envolvem riscos reais: jogue apenas o que você pode perder e com total responsabilidade.";
-        } 
-        else if (tipo === 'privacidade') {
-            modalTitle.innerText = "🔒 Política de Privacidade";
-            modalText.innerText = "Seus dados estão seguros e são utilizados exclusivamente para validação de acesso à plataforma. Não compartilhamos informações com terceiros.\n\nLembre-se: este sistema não constitui conselho financeiro. O uso é proibido para menores de 18 anos. Analise as estatísticas com critério e mantenha uma postura consciente.";
+            modalText.innerText = "TERMOS DE USO:\n\nFerramenta de análise estatística para FIFA / E-Soccer. Não somos recomendação de investimento. Apostas esportivas envolvem risco e são exclusivas para maiores de 18 anos. Opere com gestão de banca responsável.";
+        } else if (tipo === 'privacidade') {
+            modalText.innerText = "POLÍTICA DE PRIVACIDADE:\n\nSeus dados são protegidos e usados unicamente para autenticação e personalização da plataforma.";
+        } else if (tipo === 'sobre') {
+            modalText.innerText = "SOBRE O GT SCANNER (FIFA 12 MIN):\n\nMonitora partidas de FIFA GT Leagues 12 Minutos.\n\nLógica Estatística:\n• 40% Frequência Geral\n• 40% Histórico Recente com peso decrescente\n• 20% Confiança Amostral";
         }
-        else if (tipo === 'sobre') {
-            modalTitle.innerText = "ℹ️ Sobre o Scanner 8 Minutos";
-            modalText.innerText = "Este sistema processa estatísticas avançadas para a análise de confrontos e tendências de gols.\n\n• Competições monitoradas: E-Soccer - Battle 8 Minutos e Volta - 6 Minutos.\n• Atualização dos dados: Realizada de forma automatizada diariamente às 10h.\n\n---\n\nLÓGICA E INTELIGÊNCIA DO ALGORITMO:\n\n1. O Mercado Funciona por Fases (Sequências):\nNo futebol real, padrões duram meses. No Fifa, os algoritmos operam em ciclos. Um time com excelente média histórica pode entrar em uma 'seca' de 2 ou 3 dias. Se o robô usa apenas o histórico geral, ele fica 'preso ao passado' e ignora que o time travou. Com 40% de peso recente, o sistema percebe e reage rapidamente às mudanças de fase.\n\n2. Redução de Falsos Positivos em Dias Retraídos:\nEm momentos onde as defesas levam vantagem (muitos jogos 0x0 ou 1x0), o peso do momento atual puxa o Score para baixo automaticamente, impedindo entradas arriscadas baseadas apenas em confrontos de semanas atrás.\n\n3. O Ponto Doce (Equilíbrio Ideal):\n• 40% Frequência Geral: Olha o macro e a compatibilidade histórica das equipes.\n• 40% Histórico Recente: Dá sensibilidade de curto prazo para o comportamento das últimas horas.\n• 20% Confiança: Mede se a amostragem de dados é estatisticamente sólida.\n\nO futebol Fifa muda rápido, e essa distribuição garante reflexos precisos.";
-        }
-        
         document.getElementById('modal-msg').classList.remove('hidden');
     }
 
-    function showModal(mensagem, titulo = "Aviso") {
-        document.getElementById('modal-title').innerText = titulo;
+    function showModal(mensagem) {
         document.getElementById('modal-text').innerText = mensagem;
         document.getElementById('modal-msg').classList.remove('hidden');
     }
@@ -1222,9 +1046,13 @@
         const user = document.getElementById('input-user').value.trim();
         const pass = document.getElementById('input-pass').value.trim();
         
-        if (!user || !pass) { showModal("Preencha o usuário e a senha."); return; }
+        if(!user || !pass) { 
+            showModal("Por favor, preencha o e-mail e a senha."); 
+            return; 
+        }
 
         btnLogin.innerText = "VALIDANDO ACESSO...";
+        btnLogin.disabled = true;
         
         try {
             const { data: authData, error: authError } = await db.auth.signInWithPassword({
@@ -1234,64 +1062,51 @@
             
             if (authError) throw authError;
 
-            const { data: userData, error: userError } = await db
+            const { data: userData } = await db
                 .from('usuarios')
                 .select('tipo')
                 .eq('email', user)
                 .single();
 
-            if (userError) throw userError;
+            isVip = (userData && userData.tipo && userData.tipo.toLowerCase() === "assinante");
 
-            if (userData) {
-                isVip = (userData.tipo && userData.tipo.toLowerCase() === "assinante");
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-
-                atualizarStatusAssinatura(user);
-            }
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            atualizarStatusAssinatura(user);
 
         } catch (err) {
-            console.error(err);
-            let msg = "E-mail ou senha incorretos. Verifique seus dados.";
-            if (err.message && (err.message.includes("single JSON object") || err.message.includes("Invalid login credentials"))) {
-                msg = "Usuário não encontrado ou senha incorreta.";
-            }
-            showModal(msg, "Erro no Login");
+            showModal("Usuário não encontrado ou senha incorreta.");
         }
-        btnLogin.innerText = "Entrar no Sistema";
+        btnLogin.innerText = "Entrar na Plataforma";
+        btnLogin.disabled = false;
     }
 
     async function atualizarStatusAssinatura(emailUsuario) {
         try {
-            const { data, error } = await db
+            const { data } = await db
                 .from('usuarios_com_status')
                 .select('dias_para_expirar')
                 .eq('email', emailUsuario)
                 .single();
 
             const statusDiv = document.getElementById('status-assinatura');
-
-            if (data && data.dias_para_expirar !== undefined) {
+            if (data && data.dias_para_expirar !== null) {
                 const dias = data.dias_para_expirar;
-
-                if (dias === null) {
-                    statusDiv.innerHTML = `💎 Plano Gratuito`;
-                    statusDiv.style.color = "#94a3b8"; 
-                } else if (dias < 0) {
-                    statusDiv.innerHTML = `⚠️ Vencido há ${Math.abs(dias)} dias`;
+                if (dias < 0) {
+                    statusDiv.innerHTML = `<span>⚠️</span> Vencido há ${Math.abs(dias)} dias`;
                     statusDiv.style.color = "#ef4444";
                 } else if (dias <= 3) {
-                    statusDiv.innerHTML = `⏳ Expira em ${dias} dias!`;
+                    statusDiv.innerHTML = `<span>⏳</span> Expira em ${dias} dias!`;
                     statusDiv.style.color = "#f59e0b";
                 } else {
-                    statusDiv.innerHTML = `✅ Plano Ativo (${dias} dias)`;
+                    statusDiv.innerHTML = `<span>✅</span> VIP Ativo (${dias} dias)`;
                     statusDiv.style.color = "#10b981";
                 }
             } else {
-                statusDiv.innerHTML = isVip ? `✅ VIP Ativo` : `💎 Plano Gratuito`;
+                statusDiv.innerHTML = `<span>💎</span> Acesso Padrão`;
             }
         } catch (e) {
-            console.error("Erro status assinatura:", e);
+            console.error(e);
         }
     }
 
@@ -1301,693 +1116,433 @@
         const pass = document.getElementById('cad-pass').value.trim();
 
         if (!user || !pass) { showModal("Preencha todos os campos."); return; }
-        if (user.length > 60) { showModal("O email deve ter no máximo 60 caracteres."); return; }
         if (pass.length > 8) { showModal("A senha deve ter no máximo 8 dígitos."); return; }
 
-        btn.innerText = "Criando Conta...";
+        btn.innerText = "Cadastrando...";
+        btn.disabled = true;
         try {
-            const { data: authData, error: authError } = await db.auth.signUp({
-                email: user,
-                password: pass
-            });
-
+            const { error: authError } = await db.auth.signUp({ email: user, password: pass });
             if (authError) throw authError;
 
-            const { error: dbError } = await db
-                .from('usuarios')
-                .insert([{ email: user, senha: pass, tipo: 'gratis' }]);
-
-            if (dbError) throw dbError;
+            await db.from('usuarios').insert([{ email: user, senha: pass, tipo: 'gratis' }]);
             
-            showModal("Conta criada com sucesso! Você já pode fazer login.", "Sucesso!");
+            showModal("Cadastro realizado com sucesso! Efetue o login.");
             document.getElementById('cadastro-container').classList.add('hidden');
             document.getElementById('login-container').classList.remove('hidden');
         } catch (err) { 
-            console.error(err);
-            let msg = "Erro ao realizar cadastro. Tente novamente.";
-            if (err.message && err.message.includes("already registered")) {
-                msg = "Este e-mail já está cadastrado.";
-            }
-            showModal(msg, "Erro no Cadastro");
+            showModal("Erro ao cadastrar: " + (err.message || 'Verifique seus dados.'));
         }
-        btn.innerText = "Cadastrar Conta";
+        btn.innerText = "Criar Minha Conta";
+        btn.disabled = false;
     }
 
-    function calcularScorePonderado(confrontos, meta, is1T = false, jogador = null) {
-        if (!confrontos || confrontos.length < 3) return 0;
-
-        const filtrarGols = (c) => {
-            let gols;
-            if (is1T) {
-                gols = (c.Gols_Casa_1T || 0) + (c.Gols_Visitante_1T || 0);
-            } else {
-                gols = (c.Gols_Casa || 0) + (c.Gols_Visitante || 0);
-            }
-            
-            if (jogador) {
-                const ehCasa = (c.Jogador_Casa === jogador);
-                gols = ehCasa ? (c.Gols_Casa || 0) : (c.Gols_Visitante || 0);
-            }
-            return gols;
-        };
-
-        const acertos = confrontos.filter(c => filtrarGols(c) >= meta).length;
-        const freq_prob = (acertos / confrontos.length) * 100;
-
-        // Pega os 10 primeiros jogos (os mais recentes, já que a lista está ordenada do mais recente ao mais antigo)
-        const recentes = confrontos.slice(0, 10);
-        let weightedSum = 0;
-        let pesoTotal = 0;
+   // Fórmula Ponderada Corrigida e Determinística
+    function calcularScoreEstatisticoWeb(arrayValores, meta) {
+        if (!arrayValores || arrayValores.length < 3) return 0;
         
-        recentes.forEach((c, index) => {
-            const peso = recentes.length - index;
-            const hit = filtrarGols(c) >= meta ? 1 : 0;
-            weightedSum += (hit * peso);
-            pesoTotal += peso;
-        });
+        const totalItens = arrayValores.length;
+        const acertos = arrayValores.filter(val => val >= meta).length;
+        const freq_prob = (acertos / totalItens) * 100;
         
-        const weighted_prob = pesoTotal > 0 ? (weightedSum / pesoTotal) * 100 : 0;
-        const confianca_idx = Math.min(confrontos.length / 30, 1.0);
-        const finalScore = (freq_prob * 0.4) + (weighted_prob * 0.4) + (confianca_idx * 100 * 0.2);
+        // Pega sempre os primeiros 10 elementos (já que a lista principal já está ordenada do mais recente ao mais antigo)
+        const recentes = arrayValores.slice(0, 10);
+        const pesos = Array.from({length: recentes.length}, (_, i) => recentes.length - i);
+        const somaPesos = pesos.reduce((a, b) => a + b, 0);
         
-        return finalScore;
+        const weighted_prob = somaPesos > 0 ? (recentes.reduce((acc, val, idx) => acc + ((val >= meta ? 1 : 0) * pesos[idx]), 0) / somaPesos) * 100 : 0;
+        const confianca_idx = Math.min(totalItens / 30, 1.0);
+        
+        return (freq_prob * 0.4) + (weighted_prob * 0.4) + (confianca_idx * 100 * 0.2);
     }
     async function analisar() {
         const A = document.getElementById('jogadorA').value.trim();
         const B = document.getElementById('jogadorB').value.trim();
         const limite = document.getElementById('limite').value;
-        const resultadoDiv = document.getElementById('resultado');
-        const last5Container = document.getElementById('last5-container');
-        const last5Badge = document.getElementById('last5-total-badge');
-
-        if (!A || !B) {
-            showModal("Por favor, preencha o nome do Jogador A e Jogador B.");
-            return;
+        
+        if (!A || !B) { 
+            showModal("Por favor, selecione os dois jogadores para o confronto."); 
+            return; 
         }
         
-        resultadoDiv.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">⚡ Consultando base de dados em tempo real...</div>`;
-        last5Container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">Carregando confrontos...</div>`;
+        document.getElementById('resultado').innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 40px;'><p style='font-size: 16px; color: var(--accent);'>🔍 Cruzando estatísticas e calculando probabilidades...</p></div>";
         
-        const { data: confrontosBanco, error } = await db
-            .from('confrontos')
-            .select('*')
-            .or(`and(Jogador_Casa.ilike.%${A}%,Jogador_Visitante.ilike.%${B}%),and(Jogador_Casa.ilike.%${B}%,Jogador_Visitante.ilike.%${A}%)`);
-                    
+        const { data: confrontos, error } = await db.rpc('buscar_confrontos', { nome_a: A, nome_b: B });
+
         if (error) { 
-            console.error(error);
-            showModal("Erro ao buscar dados: " + error.message, "Erro"); 
-            resultadoDiv.innerHTML = "";
-            last5Container.innerHTML = `<div style="color:var(--accent-red); text-align:center; padding:20px;">Erro ao carregar histórico.</div>`;
+            showModal("Erro ao buscar dados no banco: " + error.message); 
             return; 
         }
         
-        let confrontos = confrontosBanco || []; 
+        let listaConfrontos = confrontos || [];
         
-        // ORDENAÇÃO FIXA: Do mais recente para o mais antigo (Decrescente)
-        // Substitua 'created_at' ou 'id' pelo nome real da sua coluna de data/identificador no Supabase se necessário
-        confrontos.sort((a, b) => new Date(b.created_at || b.id) - new Date(a.created_at || a.id));
+        // Ordena do mais recente ao mais antigo (do maior ID/data para o menor)
+        listaConfrontos.sort((x, y) => new Date(y.data || y.created_at || 0) - new Date(x.data || x.created_at || 0));
+
+        if (limite !== "todos") listaConfrontos = listaConfrontos.slice(0, parseInt(limite));
         
-        if (limite !== "todos") confrontos = confrontos.slice(0, parseInt(limite));
-        
-        if (confrontos.length === 0) { 
-            resultadoDiv.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Nenhum confronto direto encontrado entre <b>${A}</b> e <b>${B}</b>.</div>`; 
-            last5Container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">Nenhum confronto registrado.</div>`;
-            document.getElementById('historico-confronto').style.display = 'none';
-            document.getElementById('sugestao-wrapper').style.display = 'none';
+        if (listaConfrontos.length === 0) { 
+            document.getElementById('top-banners-wrapper').style.display = 'none';
+            document.getElementById('sugestao-container').style.display = 'none';
+            document.getElementById('painel-assertivo').style.display = 'none';
+            document.getElementById('resultado').innerHTML = `<div class='card' style='grid-column: 1/-1; text-align: center; padding: 30px;'><p>Nenhum confronto registrado entre <b>"${A}"</b> e <b>"${B}"</b>.</p></div>`; 
             return; 
         }
 
-        let gA = 0, gB = 0, vA = 0, vB = 0, empates = 0, ambasMarcamCount = 0, ambasMarcam1TCount = 0;
-        let totalGols = 0, totalGols1T = 0;
-        let golsSofridosA = 0, golsSofridosB = 0;
+        let gA = 0, gB = 0, vA = 0, vB = 0, empates = 0, ambasMarcamCount = 0;
+        let totalGols = 0, golsSofridosA = 0, golsSofridosB = 0;
+        let counts = { jogo: Array(8).fill(0), jogA: Array(8).fill(0), jogB: Array(8).fill(0) };
 
-        confrontos.forEach(c => {
-            const ehCasa = (c.Jogador_Casa === A);
-            let golsA = (ehCasa ? (c.Gols_Casa || 0) : (c.Gols_Visitante || 0));
-            let golsB = (ehCasa ? (c.Gols_Visitante || 0) : (c.Gols_Casa || 0));
-            let sofridosA = (ehCasa ? (c.Gols_Visitante || 0) : (c.Gols_Casa || 0));
-            let sofridosB = (ehCasa ? (c.Gols_Casa || 0) : (c.Gols_Visitante || 0));
-            let golsA1T = ehCasa ? (c.Gols_Casa_1T || 0) : (c.Gols_Visitante_1T || 0);
-            let golsB1T = ehCasa ? (c.Gols_Visitante_1T || 0) : (c.Gols_Casa_1T || 0);
+        let historicoGolsJogo = [], historicoGolsJogA = [], historicoGolsJogB = [];
+
+        listaConfrontos.forEach(c => {
+            const ehCasa = (c.jogador_casa && c.jogador_casa.toLowerCase() === A.toLowerCase());
+            let golsA = (ehCasa ? (c.gols_casa || 0) : (c.gols_visitante || 0));
+            let golsB = (ehCasa ? (c.gols_visitante || 0) : (c.gols_casa || 0));
+            let sofridosA = (ehCasa ? (c.gols_visitante || 0) : (c.gols_casa || 0));
+            let sofridosB = (ehCasa ? (c.gols_casa || 0) : (c.gols_visitante || 0));
             
-            gA += golsA; 
-            gB += golsB; 
-            golsSofridosA += sofridosA;
-            golsSofridosB += sofridosB;
-            totalGols += (golsA + golsB); 
-            totalGols1T += ((c.Gols_Casa_1T || 0) + (c.Gols_Visitante_1T || 0));
+            gA += golsA; gB += golsB; 
+            golsSofridosA += sofridosA; golsSofridosB += sofridosB;
+            const somaPartida = golsA + golsB;
+            totalGols += somaPartida; 
+            
+            historicoGolsJogo.push(somaPartida);
+            historicoGolsJogA.push(golsA);
+            historicoGolsJogB.push(golsB);
             
             if (golsA > golsB) vA++; else if (golsB > golsA) vB++; else empates++;
             if (golsA > 0 && golsB > 0) ambasMarcamCount++;
-            if (golsA1T > 0 && golsB1T > 0) ambasMarcam1TCount++; 
+            
+            for (let i = 0; i < 8; i++) {
+                if (somaPartida >= (i + 0.5)) counts.jogo[i]++;
+                if (golsA >= (i + 0.5)) counts.jogA[i]++;
+                if (golsB >= (i + 0.5)) counts.jogB[i]++;
+            }
         });
 
-        const total = confrontos.length;
-        document.getElementById('historico-confronto').style.display = 'flex';
+        const total = listaConfrontos.length;
+        document.getElementById('top-banners-wrapper').style.display = 'grid';
         document.getElementById('nome-jogadorA').innerText = A;
         document.getElementById('nome-jogadorB').innerText = B;
+        document.getElementById('h2h-resumo-rapido').innerText = `${vA}V ${A} | ${empates}E | ${vB}V ${B}`;
 
-        const last5 = confrontos.slice(0, 5); 
-        let formA = [];
-        let formB = [];
-        last5.forEach(c => {
-            let golsA = (c.Jogador_Casa === A) ? c.Gols_Casa : c.Gols_Visitante;
-            let golsB = (c.Jogador_Casa === A) ? c.Gols_Visitante : c.Gols_Casa;
+        const last5 = listaConfrontos.slice(0, 5).reverse(); 
+        let formA = [], formB = [];
+        let placaresHtml = '';
+        let qtdSecos = 0;
+
+        last5.forEach((c, idx) => {
+            const golsA = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? (c.gols_casa || 0) : (c.gols_visitante || 0);
+            const golsB = (c.jogador_casa.toLowerCase() === A.toLowerCase()) ? (c.gols_visitante || 0) : (c.gols_casa || 0);
+            const soma = golsA + golsB;
+            const ehSeco = (soma <= 1);
+
+            if (ehSeco) qtdSecos++;
+
             if (golsA > golsB) { formA.push('V'); formB.push('D'); }
             else if (golsB > golsA) { formA.push('D'); formB.push('V'); }
             else { formA.push('E'); formB.push('E'); }
+
+            placaresHtml += `
+                <div class="item-placar ${ehSeco ? 'seco' : ''}">
+                    <span style="color: var(--text-muted); font-size: 11px; width: 20px;">#${idx + 1}</span>
+                    <span style="font-weight: 600;">${A}</span>
+                    <span class="score-badge" style="${ehSeco ? 'background: rgba(239,68,68,0.25); color:#fca5a5;' : ''}">${golsA} x ${golsB}</span>
+                    <span style="font-weight: 600;">${B}</span>
+                    <span style="font-size: 11px; font-weight: 700; color: ${soma >= 4 ? '#10b981' : soma >= 2 ? '#38bdf8' : '#ef4444'};">${soma} gol${soma === 1 ? '' : 's'}</span>
+                </div>
+            `;
         });
+
+        document.getElementById('lista-ultimos-placares').innerHTML = placaresHtml || '<div style="color:var(--text-muted); font-size:12px;">Sem dados</div>';
+
+        const validadorBox = document.getElementById('validador-zerados');
+        if (qtdSecos === 0) {
+            validadorBox.className = 'validador-status validador-sucesso';
+            validadorBox.innerHTML = '<span>✅</span> <div><b>Nenhum placar zerado (0x0/1x0):</b> Alta fluidez de gols nos confrontos recentes.</div>';
+        } else {
+            validadorBox.className = 'validador-status validador-alerta';
+            validadorBox.innerHTML = `<span>⚠️</span> <div><b>${qtdSecos} jogo(s) travado(s) (≤ 1 gol):</b> Houve jogo seco recente. Prefira linhas com margem de segurança.</div>`;
+        }
 
         renderizarBolinhas('bolinhas-A', formA);
         renderizarBolinhas('bolinhas-B', formB);
 
-        // Renderizar Card dos Últimos 5 Confrontos com Placar
-        last5Badge.innerText = `${total} jogos no total`;
-        last5Container.innerHTML = last5.map(c => {
-            const ehCasaA = (c.Jogador_Casa === A);
-            const timeA = ehCasaA ? (c.Time_Casa || c.Jogador_Casa) : (c.Time_Visitante || c.Jogador_Visitante);
-            const timeB = ehCasaA ? (c.Time_Visitante || c.Jogador_Visitante) : (c.Time_Casa || c.Jogador_Casa);
-            const g1 = ehCasaA ? c.Gols_Casa : c.Gols_Visitante;
-            const g2 = ehCasaA ? c.Gols_Visitante : c.Gols_Casa;
-            const totGols = (c.Gols_Casa || 0) + (c.Gols_Visitante || 0);
-
-            let statusIcon = '<span style="color:var(--text-muted); font-weight:800; font-size:10px;">E</span>';
-            if (g1 > g2) statusIcon = '<span style="color:var(--accent-green); font-weight:800; font-size:10px;">V</span>';
-            else if (g1 < g2) statusIcon = '<span style="color:var(--accent-red); font-weight:800; font-size:10px;">D</span>';
-
-            return `
-                <div class="last5-item">
-                    <div class="last5-matchup">
-                        ${statusIcon}
-                        <div>
-                            <span style="color: ${ehCasaA ? 'var(--brand-orange)' : 'var(--text-main)'}; font-weight:700;">${c.Jogador_Casa}</span>
-                            <span style="color: var(--text-muted); font-size: 11px;"> vs </span>
-                            <span style="color: ${!ehCasaA ? 'var(--brand-orange)' : 'var(--text-main)'}; font-weight:700;">${c.Jogador_Visitante}</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="last5-score-badge">${c.Gols_Casa} x ${c.Gols_Visitante}</span>
-                        <span style="font-size:10px; color:var(--text-muted);">(${totGols} gols)</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Sugestão de Linhas: 1º Tempo e Jogo Completo (Maior linha >= 80%)
-        const metas1T = [0.5, 1.5, 2.5, 3.5, 4.5];
-        const scores1T = metas1T.map(m => ({ meta: m, score: Math.round(calcularScorePonderado(confrontos, m, true, null)) }));
-        const validas1T = scores1T.filter(s => s.score >= 80);
-        const sug1T = validas1T.length > 0 
-            ? validas1T.reduce((p, c) => (c.meta > p.meta ? c : p))
-            : scores1T.reduce((p, c) => (c.score > p.score ? c : p));
-
-        const metasFT = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5];
-        const scoresFT = metasFT.map(m => ({ meta: m, score: Math.round(calcularScorePonderado(confrontos, m, false, null)) }));
-        const validasFT = scoresFT.filter(s => s.score >= 80);
-        const sugFT = validasFT.length > 0 
-            ? validasFT.reduce((p, c) => (c.meta > p.meta ? c : p))
-            : scoresFT.reduce((p, c) => (c.score > p.score ? c : p));
-
-        document.getElementById('sugestao-wrapper').style.display = 'block';
-
-        if (isVip) {
-            document.getElementById('sugestao').innerHTML = `
-                <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
-                    <span style="background: rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:4px 10px; border-radius:8px; font-weight:800; color:#34d399; font-size:0.8rem;">
-                        1º TEMPO: Over ${sug1T.meta} 1T (${sug1T.score}%)
-                    </span>
-                    <span style="background: rgba(255,140,0,0.15); border:1px solid rgba(255,140,0,0.3); padding:4px 10px; border-radius:8px; font-weight:800; color:var(--brand-orange); font-size:0.8rem;">
-                        JOGO COMPLETO: Over ${sugFT.meta} FT (${sugFT.score}%)
-                    </span>
-                </div>
-            `;
-        } else {
-            document.getElementById('sugestao').innerHTML = '<a href="pagamento.html" class="btn-vip-lock" target="_blank" style="display: inline-flex; width: auto; padding: 4px 12px;">🔒 DESBLOQUEAR SUGESTÕES VIP (1T & FT)</a>';
+        // Painel de Assertividade
+        let scoresLinhas = [];
+        for (let i = 0; i < 8; i++) {
+            const meta = i + 0.5;
+            const score = calcularScoreEstatisticoWeb(historicoGolsJogo, meta);
+            scoresLinhas.push({ linha: `Over ${meta} Gols`, meta, score });
         }
 
-        const renderBar = (meta, label, confrontos, is1T = false, jogador = null) => {
-            const val = calcularScorePonderado(confrontos, meta, is1T, jogador);
-            const ehLinhaLiberada = (label.includes("0.5"));
+        let melhorLinha = scoresLinhas.filter(s => s.score >= 75).pop() || scoresLinhas[0];
+        document.getElementById('badge-melhor-mercado').innerHTML = `🏆 Top Pick: <b>${melhorLinha.linha} (${melhorLinha.score.toFixed(0)}% Score)</b>`;
 
-            if (!isVip && !ehLinhaLiberada) { 
-                return `
-                    <div class="vip-locked-item">
-                        <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);">${label}</span>
-                        <a href="pagamento.html" class="btn-vip-lock" target="_blank" style="width: auto;">🔒 VIP</a>
-                    </div>
-                `;
-            }
-            
-            let corBarra = 'var(--accent-red)';
-            if (val >= 80) corBarra = 'var(--accent-green)';
-            else if (val >= 70) corBarra = 'var(--accent-yellow)';
-            
-            return `
-                <div class="bar-row">
-                    <span class="bar-label">${label}</span>
-                    <div class="bar-track">
-                        <div class="bar-fill" style="background: ${corBarra}; width: ${val.toFixed(0)}%;"></div>
-                    </div>
-                    <span class="bar-value" style="color: ${corBarra};">${val.toFixed(0)}%</span>
-                </div>
-            `;
-        };
+        const pctAmbas = total > 0 ? (ambasMarcamCount / total) * 100 : 0;
+        const pctVitA = total > 0 ? (vA / total) * 100 : 0;
+        const pctVitB = total > 0 ? (vB / total) * 100 : 0;
+        let favorito = pctVitA > pctVitB ? A : (pctVitB > pctVitA ? B : 'Equilibrado');
+        let pctFavorito = Math.max(pctVitA, pctVitB);
 
-        const renderSimpleCard = (label, count, total, color) => {
-            const p = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
-            return `
-                <div class="stat-card">
-                    <div class="stat-label">${label}</div>
-                    <div class="stat-value">${count} <span class="stat-pct">(${p}%)</span></div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="background: ${color}; width: ${p}%;"></div>
+        document.getElementById('grid-assertivo-cards').innerHTML = `
+            <div class="card-destaque-assertivo ${melhorLinha.score >= 80 ? 'ouro' : 'prata'}">
+                <span class="badge-assertividade-tag ${melhorLinha.score >= 80 ? 'tag-ouro' : 'tag-prata'}">
+                    ${melhorLinha.score >= 80 ? '🔥 ALTA ASSERTIVIDADE' : '⚡ LINHA SEGURA'}
+                </span>
+                <div>
+                    <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Mercado Principal de Gols</div>
+                    <div style="font-size: 22px; font-weight: 800; margin: 2px 0;">${melhorLinha.linha}</div>
+                    <div style="font-size: 12px; color: ${melhorLinha.score >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 700;">
+                        Score Ponderado: ${melhorLinha.score.toFixed(0)}% de acerto
                     </div>
                 </div>
-            `;
-        };
-
-        const renderVipStat = (label, value) => {
-            if (isVip) {
-                return `
-                    <div class="stat-card">
-                        <div class="stat-label">${label}</div>
-                        <div class="stat-value">${value}</div>
-                    </div>
-                `;
-            }
-            return `
-                <div class="stat-card">
-                    <div class="stat-label">${label}</div>
-                    <a href="pagamento.html" class="btn-vip-lock" target="_blank" style="margin-top: 4px;">🔒 APENAS VIP</a>
+                <div class="stat-progress-bar">
+                    <div class="stat-progress-fill" style="background: ${melhorLinha.score >= 80 ? '#10b981' : '#f59e0b'}; width: ${melhorLinha.score}%;"></div>
                 </div>
-            `;
-        };
-
-        resultadoDiv.innerHTML = `
-            <div class="stats-grid">
-                <div class="stat-card" style="border-color: rgba(255, 140, 0, 0.3);">
-                    <div class="stat-label">Total de Jogos</div>
-                    <div class="stat-value" style="color: var(--brand-orange);">${total}</div>
-                </div>
-                ${renderSimpleCard(`Vitórias ${A}`, vA, total, 'var(--accent-green)')}
-                ${renderSimpleCard(`Vitórias ${B}`, vB, total, 'var(--accent-green)')}
-                ${renderSimpleCard('Empates', empates, total, 'var(--accent-yellow)')}
-                ${renderSimpleCard('Ambas Marcam', ambasMarcamCount, total, 'var(--accent-green)')}
-                ${renderVipStat('Ambas 1º Tempo', `${ambasMarcam1TCount} (${((ambasMarcam1TCount/total)*100).toFixed(0)}%)`)}
-                ${renderVipStat('Média de Gols', (totalGols / total).toFixed(2))}
-                ${renderVipStat('Média 1º Tempo', (totalGols1T / total).toFixed(2))}
-                ${renderVipStat('Média Gols ' + A, (gA / total).toFixed(2))}
-                ${renderVipStat('Média Gols ' + B, (gB / total).toFixed(2))}
-                ${renderVipStat('Gols Feitos ' + A, gA)}
-                ${renderVipStat('Sofridos ' + A, golsSofridosA)}
-                ${renderVipStat('Gols Feitos ' + B, gB)}
-                ${renderVipStat('Sofridos ' + B, golsSofridosB)}
             </div>
 
-            <div class="matrix-grid">
-                <div class="matrix-col">
-                    <div class="matrix-header">
-                        <span>OVER 1º TEMPO</span>
-                        <span>⚡ PROB</span>
+            <div class="card-destaque-assertivo ${pctAmbas >= 70 ? 'ouro' : 'prata'}">
+                <span class="badge-assertividade-tag ${pctAmbas >= 70 ? 'tag-ouro' : 'tag-prata'}">
+                    ${pctAmbas >= 70 ? '⚽ TENDÊNCIA DE AMBAS' : '📊 MERCADO REGULAR'}
+                </span>
+                <div>
+                    <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Ambas Equipes Marcam</div>
+                    <div style="font-size: 22px; font-weight: 800; margin: 2px 0;">
+                        ${pctAmbas >= 50 ? 'Ambas SIM' : 'Ambas NÃO'}
                     </div>
-                    ${[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map(meta => renderBar(meta, meta + ' Gols', confrontos, true)).join('')}
+                    <div style="font-size: 12px; color: ${pctAmbas >= 70 ? '#10b981' : '#f59e0b'}; font-weight: 700;">
+                        Frequência Histórica: ${pctAmbas.toFixed(0)}% (${ambasMarcamCount}/${total} jogos)
+                    </div>
                 </div>
-                <div class="matrix-col">
-                    <div class="matrix-header">
-                        <span>OVER NO JOGO</span>
-                        <span>⚡ PROB</span>
-                    </div>
-                    ${[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map(meta => renderBar(meta, meta + ' Gols', confrontos, false)).join('')}
+                <div class="stat-progress-bar">
+                    <div class="stat-progress-fill" style="background: ${pctAmbas >= 70 ? '#10b981' : '#f59e0b'}; width: ${pctAmbas}%;"></div>
                 </div>
-                <div class="matrix-col">
-                    <div class="matrix-header">
-                        <span>${A} (INDIVIDUAL)</span>
-                        <span>⚡ PROB</span>
+            </div>
+
+            <div class="card-destaque-assertivo prata">
+                <span class="badge-assertividade-tag tag-prata">👑 TENDÊNCIA H2H</span>
+                <div>
+                    <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Dominância no H2H</div>
+                    <div style="font-size: 20px; font-weight: 800; margin: 2px 0;">
+                        ${favorito !== 'Equilibrado' ? `Vencedor: ${favorito}` : 'Equilíbrio Total'}
                     </div>
-                    ${[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map(meta => renderBar(meta, meta + ' Gols', confrontos, false, A)).join('')}
+                    <div style="font-size: 12px; color: var(--accent); font-weight: 700;">
+                        ${favorito !== 'Equilibrado' ? `${pctFavorito.toFixed(0)}% vitórias` : `${empates} empates registrados`}
+                    </div>
                 </div>
-                <div class="matrix-col">
-                    <div class="matrix-header">
-                        <span>${B} (INDIVIDUAL)</span>
-                        <span>⚡ PROB</span>
-                    </div>
-                    ${[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map(meta => renderBar(meta, meta + ' Gols', confrontos, false, B)).join('')}
+                <div class="stat-progress-bar">
+                    <div class="stat-progress-fill" style="background: var(--accent); width: ${pctFavorito}%;"></div>
                 </div>
             </div>
         `;
+        document.getElementById('painel-assertivo').style.display = 'block';
+
+        const mediaGols = totalGols / total;
+        let sugestaoOver = Math.max(0.5, mediaGols - 1.5).toFixed(1); 
+        
+        document.getElementById('sugestao-container').style.display = 'block';
+        if (isVip) {
+            document.getElementById('sugestao').innerText = (parseFloat(sugestaoOver) >= 4.0) 
+                ? `Padrão ofensivo detectado. As últimas partidas mostram um confronto aberto. Sugestão: Over ${sugestaoOver} gols.`
+                : `Padrão tático identificado. As últimas partidas demonstram ritmo mais controlado. Sugestão: Over ${sugestaoOver} gols.`;
+        } else {
+            document.getElementById('sugestao').innerHTML = '<span>🔒 <b>Análise Preditiva de I.A VIP:</b> Desbloqueie sugestões em tempo real. <a href="pagamento.html" class="btn-vip" style="display:inline-block; margin-left:8px;">ASSINAR VIP</a></span>';
+        }
+
+        const renderBar = (arrayDadosHistoricos, total, label, i) => {
+            const meta = i + 0.5;
+            const val = calcularScoreEstatisticoWeb(arrayDadosHistoricos, meta);
+            const ehLinhaLiberada = (label.includes("0.5"));
+
+            if (!isVip && !ehLinhaLiberada) { 
+                return `<div class="goal-row" style="opacity: 0.7;"><span class="goal-label">${label}</span><a href="pagamento.html" class="btn-vip" style="flex:1; padding: 4px;">🔒 APENAS VIP</a></div>`;
+            }
+            
+            let corBarra = '#ef4444';
+            let selo = '';
+            if (val >= 80) { corBarra = '#10b981'; selo = '⭐'; }
+            else if (val >= 70) { corBarra = '#f59e0b'; selo = '⚡'; }
+            
+            return `<div class="goal-row">
+                        <span class="goal-label">${label} ${selo}</span>
+                        <div class="goal-track"><div class="goal-fill" style="background:${corBarra}; width:${val.toFixed(0)}%;"></div></div>
+                        <span class="goal-percent" style="color:${corBarra};">${val.toFixed(0)}%</span>
+                    </div>`;
+        };
+
+        document.getElementById('resultado').innerHTML = `
+            <div class="card"><div class="card-title">Total de Confrontos</div><div class="card-value">${total} jogos</div></div>
+            ${renderCardSimple(`Vitórias ${A}`, vA, total, '#10b981')}
+            ${renderCardSimple(`Vitórias ${B}`, vB, total, '#10b981')}
+            ${renderCardSimple('Empates', empates, total, '#f59e0b')}
+            ${renderCardSimple('Ambas Marcam', ambasMarcamCount, total, '#10b981')}
+            ${renderVipStat('Média Geral de Gols', (totalGols / total).toFixed(2))}
+            ${renderVipStat('Média Gols ' + A, (gA / total).toFixed(2))}
+            ${renderVipStat('Média Gols ' + B, (gB / total).toFixed(2))}
+            ${renderVipStat('Gols Feitos ' + A, gA)}
+            ${renderVipStat('Gols Sofridos ' + A, golsSofridosA)}
+            ${renderVipStat('Gols Feitos ' + B, gB)}
+            ${renderVipStat('Gols Sofridos ' + B, golsSofridosB)}
+            <div class="grid-columns">
+                <div class="grid-column-box"><h3>⚽ OVER GOLS NO JOGO</h3>${counts.jogo.map((c, i) => renderBar(historicoGolsJogo, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR ${A}</h3>${counts.jogA.map((c, i) => renderBar(historicoGolsJogA, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR ${B}</h3>${counts.jogB.map((c, i) => renderBar(historicoGolsJogB, total, (i+0.5)+' Gols', i)).join('')}</div>
+            </div>
+        `;
+    }
+    function renderCardSimple(label, count, total, color) {
+        const p = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
+        return `
+        <div class="card">
+            <div class="card-title">${label}</div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <span class="card-value">${count}</span>
+                <span style="font-weight:700; color:${color}; font-size:14px;">${p}%</span>
+            </div>
+            <div class="stat-progress-bar">
+                <div class="stat-progress-fill" style="background:${color}; width:${p}%;"></div>
+            </div>
+        </div>`;
+    }
+
+    function renderVipStat(label, value) {
+        if (isVip) {
+            return `<div class="card"><div class="card-title">${label}</div><div class="card-value" style="color:var(--accent);">${value}</div></div>`;
+        }
+        return `<div class="card"><div class="card-title">${label}</div><a href="pagamento.html" class="btn-vip">🔒 DESBLOQUEAR VIP</a></div>`;
     }
 
     function renderizarBolinhas(containerId, resultados) {
         const container = document.getElementById(containerId);
         container.innerHTML = ''; 
         const ultimos5 = resultados.slice(0, 5); 
-        while(ultimos5.length < 5) {
-            ultimos5.push('vazio'); 
-        }
+        while(ultimos5.length < 5) ultimos5.push('vazio');
 
         ultimos5.forEach(res => {
             const bola = document.createElement('div');
             bola.classList.add('bola-historico');
-            if (res === 'V') {
-                bola.classList.add('bola-vitoria');
-                bola.innerText = 'V';
-            } else if (res === 'D') {
-                bola.classList.add('bola-derrota');
-                bola.innerText = 'D';
-            } else if (res === 'E') {
-                bola.classList.add('bola-empate');
-                bola.innerText = 'E';
-            } else {
-                bola.classList.add('bola-vazia');
-                bola.innerText = '-';
-            }
+            const v = String(res).trim().toUpperCase();
+            if (v === 'V') bola.classList.add('bola-vitoria');
+            else if (v === 'D') bola.classList.add('bola-derrota');
+            else if (v === 'E') bola.classList.add('bola-empate');
+            else bola.classList.add('bola-vazia');
             container.appendChild(bola);
         });
     }
 
-    // =========================================================================
-    // 3. ABA AO VIVO: CONEXÃO COM ROBÔ PYTHON & FILTRO SUPABASE
-    // =========================================================================
-    let intervalAoVivo = null;
-    const cacheConfrontosAoVivo = new Map();
+// Monitoramento Ao Vivo
+let segundosRestantesRefresh = 60;
 
-    async function obterConfrontosParaJogoAoVivo(jogadorA, jogadorB) {
-        const ja = (jogadorA || '').trim();
-        const jb = (jogadorB || '').trim();
-        if (!ja || !jb) return [];
-        const key = `${ja.toLowerCase()}_vs_${jb.toLowerCase()}`;
-        if (cacheConfrontosAoVivo.has(key)) {
-            return cacheConfrontosAoVivo.get(key);
-        }
-
-        const client = window.db || (typeof db !== 'undefined' ? db : null);
-        if (!client) return [];
-
-        try {
-            const { data, error } = await client
-                .from('confrontos')
-                .select('*')
-                .or(`and(Jogador_Casa.ilike.%${ja}%,Jogador_Visitante.ilike.%${jb}%),and(Jogador_Casa.ilike.%${jb}%,Jogador_Visitante.ilike.%${ja}%)`);
-            if (!error && data && data.length > 0) {
-                cacheConfrontosAoVivo.set(key, data);
-                return data;
+function iniciarMonitoramentoAoVivo() {
+    buscarJogosAoVivo();
+    if (!timerAoVivoInterval) {
+        timerAoVivoInterval = setInterval(() => {
+            segundosRestantesRefresh--;
+            if (segundosRestantesRefresh <= 0) {
+                segundosRestantesRefresh = 60;
+                buscarJogosAoVivo();
             }
-        } catch (e) {
-            console.warn('Erro ao consultar confrontos no Supabase para radar:', e);
-        }
-
-        // Fallback robusto por jogador separado
-        try {
-            const [resA, resB] = await Promise.all([
-                client.from('confrontos').select('*').ilike('Jogador_Casa', `%${ja}%`),
-                client.from('confrontos').select('*').ilike('Jogador_Visitante', `%${ja}%`)
-            ]);
-            const todos = [...(resA.data || []), ...(resB.data || [])];
-            const vistos = new Set();
-            const filtrados = [];
-            for (const c of todos) {
-                const cid = c.id || `${c.Jogador_Casa}_${c.Jogador_Visitante}_${c.created_at || c.data}`;
-                if (vistos.has(cid)) continue;
-                vistos.add(cid);
-                const jc = (c.Jogador_Casa || '').toLowerCase();
-                const jv = (c.Jogador_Visitante || '').toLowerCase();
-                const jaLow = ja.toLowerCase();
-                const jbLow = jb.toLowerCase();
-                if ((jc.includes(jaLow) && jv.includes(jbLow)) || (jc.includes(jbLow) && jv.includes(jaLow))) {
-                    filtrados.append(c);
-                }
-            }
-            if (filtrados.length > 0) {
-                cacheConfrontosAoVivo.set(key, filtrados);
-                return filtrados;
-            }
-        } catch (e2) {
-            console.warn('Erro no fallback de confrontos:', e2);
-        }
-
-        return [];
+            const elem = document.getElementById('contador-refresh-segundos');
+            if (elem) elem.innerText = `${segundosRestantesRefresh}s`;
+        }, 1000);
     }
+}
 
-    async function carregarJogosAoVivo() {
-        const container = document.getElementById('live-games-container');
-        if (!container) return;
+async function buscarJogosAoVivo() {
+    const statusPill = document.getElementById('live-bot-status');
+    const statusText = document.getElementById('live-bot-status-text');
 
-        // Se ainda não tem conteúdo, mostra loading
-        if (container.children.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">⚡ Consultando jogos ao vivo e filtrando base Supabase...</div>`;
-        }
-
-        // Garantir que a lista de jogadores do banco está carregada
-        if (listaJogadoresBanco.size === 0) {
-            await carregarDados();
-        }
-
-        let jogos = [];
-
-        try {
-            // Tentar API do Robô Python
-            const response = await fetch('http://localhost:5000/api/aovivo', { signal: AbortSignal.timeout(2500) });
-            if (response.ok) {
-                const data = await response.json();
-                jogos = data.jogos || [];
+    try {
+        const resp = await fetch('http://127.0.0.1:5000/api/aovivo');
+        if (resp.ok) {
+            const dados = await resp.json();
+            statusPill.className = 'live-status-pill';
+            statusText.innerText = `Robô Python Online (${dados.total_jogos} jogos na Bet365)`;
+            
+            if (dados.proxima_analise_em !== undefined) {
+                segundosRestantesRefresh = dados.proxima_analise_em;
             }
-        } catch (e) {
-            // Se o robô local na porta 5000 não estiver rodando, carrega os jogos iniciais
-            jogos = [
-                {
-                    id: 'dave_tony',
-                    time_a: 'Real Madrid',
-                    time_b: 'Bayern Munich',
-                    jogador_a: 'Dave',
-                    jogador_b: 'Tony',
-                    placar_a: 1,
-                    placar_b: 1,
-                    total_gols: 2,
-                    tempo: '02:20',
-                    minuto: 2,
-                    fase: '1º Tempo',
-                    gatilho_info: 'Gatilho 2\' (1T) Ativo',
-                    meta_sugerida: 3.5,
-                    score: 86,
-                    meta_sugerida_1t: 0.5,
-                    score_1t: 96,
-                    meta_sugerida_ft: 3.5,
-                    score_ft: 86,
-                    telegram_enviado: false,
-                    valido_para_entrada: false
-                },
-                {
-                    id: 'sam_alex',
-                    time_a: 'PSG',
-                    time_b: 'Manchester City',
-                    jogador_a: 'Sam',
-                    jogador_b: 'Alex',
-                    placar_a: 2,
-                    placar_b: 2,
-                    total_gols: 4,
-                    tempo: '06:15',
-                    minuto: 6,
-                    fase: '2º Tempo',
-                    gatilho_info: 'Gatilho 6\' (2T - Gol Limite) Ativo',
-                    meta_sugerida: 3.5,
-                    score: 84,
-                    meta_sugerida_1t: 0.5,
-                    score_1t: 94,
-                    meta_sugerida_ft: 3.5,
-                    score_ft: 84,
-                    telegram_enviado: false,
-                    valido_para_entrada: false
-                }
-            ];
-        }
-
-        function selecionarMaiorLinhaDentro80JS(confrontos, is1T) {
-            const metas = is1T ? [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5] : [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5];
-            const scores = metas.map(meta => ({
-                meta,
-                score: Math.round(calcularScorePonderado(confrontos, meta, is1T))
-            }));
-            const linhas80Plus = scores.filter(s => s.score >= 80);
-            if (linhas80Plus.length > 0) {
-                return linhas80Plus.reduce((prev, curr) => (curr.meta > prev.meta ? curr : prev));
-            }
-            return scores.reduce((prev, curr) => (curr.score > prev.score ? curr : prev));
-        }
-
-        // 1. DEDUPLICAÇÃO DE CARDS
-        // 2. FILTRO ESTRITO: "NÃO É PARA MOSTRAR CARD DE JOGADORES QUE NÃO TEM NO BANCO DE DADOS"
-        const jogosValidados = [];
-        const chavesVistas = new Set();
-
-        for (const j of jogos) {
-            const ja = (j.jogador_a || '').trim().toLowerCase();
-            const jb = (j.jogador_b || '').trim().toLowerCase();
-            const chaveConfronto = `${ja}_vs_${jb}`;
-
-            // Pula duplicatas
-            if (chavesVistas.has(chaveConfronto)) {
-                continue;
-            }
-
-            // Valida se AMBOS os jogadores constam no banco de dados do Supabase
-            if (listaJogadoresBanco.size > 0) {
-                const jogadorAExiste = listaJogadoresBanco.has(ja);
-                const jogadorBExiste = listaJogadoresBanco.has(jb);
-                
-                // Se algum dos jogadores não estiver no banco, NÃO exibe o card!
-                if (!jogadorAExiste || !jogadorBExiste) {
-                    continue;
-                }
-            }
-
-            chavesVistas.add(chaveConfronto);
-            jogosValidados.push(j);
-        }
-
-        if (jogosValidados.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: var(--text-muted); background: var(--card-bg); border-radius: var(--radius-card); border: 1px solid var(--card-border);">
-                    <div style="font-size: 2rem; margin-bottom: 8px;">📡</div>
-                    <div style="font-size: 1rem; font-weight: 800; color: var(--text-main);">Nenhum jogo ao vivo com jogadores da base cadastrada</div>
-                    <div style="font-size: 0.8rem; margin-top: 6px; color: var(--text-muted);">
-                        O filtro ativo oculta partidas com jogadores não registrados na tabela <code>lista_jogadores</code> do Supabase.
-                    </div>
-                </div>
-            `;
+            
+            renderizarJogosAoVivo(dados.jogos || []);
             return;
         }
+    } catch (e) {
+        statusPill.className = 'live-status-pill offline';
+        statusText.innerText = 'Robô Python Offline (Aguardando bot_live_bet365.py na porta 9222)';
+    }
+}
 
-        const cardsHtml = await Promise.all(jogosValidados.map(async (jogo) => {
-            const telegramEnviado = Boolean(jogo.telegram_enviado || jogo.alerta_disparado);
-            const is1T = (jogo.minuto < 4);
-            const triggerClass = is1T ? 'trigger-1t' : 'trigger-2t';
-
-            const confrontos = await obterConfrontosParaJogoAoVivo(jogo.jogador_a, jogo.jogador_b);
-            let sug1T, sugFT;
-            if (confrontos && confrontos.length >= 3) {
-                sug1T = selecionarMaiorLinhaDentro80JS(confrontos, true);
-                sugFT = selecionarMaiorLinhaDentro80JS(confrontos, false);
-            } else if (jogo.analise_ht && jogo.analise_ht.meta !== undefined && jogo.analise_ht.score !== undefined) {
-                sug1T = { meta: parseFloat(jogo.analise_ht.meta), score: Math.round(jogo.analise_ht.score) };
-                sugFT = { meta: parseFloat(jogo.analise_ft.meta), score: Math.round(jogo.analise_ft.score) };
-            } else if (jogo.meta_sugerida_1t !== undefined && jogo.meta_sugerida_1t !== null && jogo.score_1t !== undefined) {
-                sug1T = { meta: parseFloat(jogo.meta_sugerida_1t), score: Math.round(jogo.score_1t) };
-                sugFT = { meta: parseFloat(jogo.meta_sugerida_ft || 3.5), score: Math.round(jogo.score_ft || 80) };
-            } else {
-                sug1T = selecionarMaiorLinhaDentro80JS(confrontos, true);
-                sugFT = selecionarMaiorLinhaDentro80JS(confrontos, false);
-            }
-
-            const meta1T = sug1T.meta.toFixed(1);
-            const score1T = sug1T.score;
-            const metaFT = sugFT.meta.toFixed(1);
-            const scoreFT = sugFT.score;
-
-            let statusGatilhoTexto = '⏳ Aguardando Gatilho 2\' (1T)';
-            if (telegramEnviado) {
-                statusGatilhoTexto = '⚡ Telegram Enviado';
-            } else if (jogo.minuto < 2) {
-                statusGatilhoTexto = '⏳ Aguardando Gatilho 2\' (1T)';
-            } else if (jogo.minuto < 4) {
-                statusGatilhoTexto = '📊 Em Análise 1T (2\'-3\')';
-            } else if (jogo.minuto < 6) {
-                statusGatilhoTexto = '⏳ Aguardando Gatilho 6\' (2T)';
-            } else {
-                statusGatilhoTexto = '📊 Em Análise 2T (Gol Limite)';
-            }
-
-            return `
-                <div class="live-card ${telegramEnviado ? 'confirmed-alert' : ''}">
-                    ${telegramEnviado ? `
-                        <div class="badge-confirmed">
-                            🔥 ENTRADA CONFIRMADA (TELEGRAM ENVIADO)
-                        </div>
-                    ` : ''}
-
-                    <div>
-                        <div class="live-card-header">
-                            <span>FIFA Battle 8 Minutos</span>
-                            <span class="live-tag-trigger ${triggerClass}">
-                                ⏱️ ${jogo.tempo} (${is1T ? '1ºT' : '2ºT'})
-                            </span>
-                        </div>
-
-                        <div class="live-card-body">
-                            <div>
-                                <div class="live-team-name">${jogo.time_a}</div>
-                                <div class="live-player-name">(${jogo.jogador_a})</div>
-                            </div>
-
-                            <div class="live-score-box">
-                                ${jogo.placar_a} x ${jogo.placar_b}
-                            </div>
-
-                            <div>
-                                <div class="live-team-name">${jogo.time_b}</div>
-                                <div class="live-player-name">(${jogo.jogador_b})</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <!-- Duas Linhas Sugeridas: 1º Tempo e Jogo Completo -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                            <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between;">
-                                <div>
-                                    <span style="font-size: 0.68rem; color: var(--text-muted); display: block; font-weight: 700; text-transform: uppercase;">1º Tempo</span>
-                                    <strong style="color: #38bdf8; font-size: 0.85rem;">Over ${meta1T} 1T</strong>
-                                </div>
-                                <span style="font-size: 0.78rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; ${score1T >= 80 ? 'background: rgba(16,185,129,0.2); color: #34d399;' : 'background: rgba(245,158,11,0.2); color: #fbbf24;'}">
-                                    ${score1T}%
-                                </span>
-                            </div>
-
-                            <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between;">
-                                <div>
-                                    <span style="font-size: 0.68rem; color: var(--text-muted); display: block; font-weight: 700; text-transform: uppercase;">Jogo Completo</span>
-                                    <strong style="color: var(--brand-orange); font-size: 0.85rem;">Over ${metaFT} FT</strong>
-                                </div>
-                                <span style="font-size: 0.78rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; ${scoreFT >= 80 ? 'background: rgba(16,185,129,0.2); color: #34d399;' : 'background: rgba(245,158,11,0.2); color: #fbbf24;'}">
-                                    ${scoreFT}%
-                                </span>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 8px; font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                            <span>✅ Validado na base Supabase</span>
-                            <span style="color: ${telegramEnviado ? 'var(--accent-green)' : 'var(--text-muted)'}; font-weight: 700;">
-                                ${statusGatilhoTexto}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }));
-        container.innerHTML = cardsHtml.join('');
+function renderizarJogosAoVivo(jogos) {
+    const grid = document.getElementById('lista-jogos-aovivo');
+    
+    if (!jogos || jogos.length === 0) {
+        grid.innerHTML = '<div class="card" style="grid-column: 1/-1; text-align: center; padding: 36px;"><p>Aguardando partidas ativas na Bet365.</p></div>';
+        return;
     }
 
-    async function testarTelegramAoVivo() {
-        const token = '8552538187:AAEZZlOzr5FtjcV6WtG65u3KLG3WJuEvvyo';
-        const chatId = '1516908332';
-        const msg = `🤖 <b>TESTE DE CONEXÃO - SCANNER 8 MINUTOS</b>\n\n✅ Radar Ao Vivo Conectado!\n⏱️ Gatilho 1T: 2 min | Gatilho 2T: 6 min\n🎯 Critério de Disparo: Score Ponderado ≥ 80%\n\n📅 ${new Date().toLocaleString()}`;
+    const idsAtivos = new Set(jogos.map(j => `${j.jogador_a}_${j.jogador_b}`));
 
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'HTML' })
-            });
+    grid.querySelectorAll('.live-match-card').forEach(card => {
+        const idCard = card.getAttribute('data-id');
+        if (idCard && !idsAtivos.has(idCard)) card.remove();
+    });
 
-            if (res.ok) {
-                showModal("Mensagem de teste enviada com sucesso no Telegram (Chat ID: 1516908332)!", "Telegram Conectado");
-            } else {
-                showModal("Falha ao enviar mensagem no Telegram. Verifique o token e chat ID.", "Erro Telegram");
-            }
-        } catch (e) {
-            showModal("Erro de conexão com o Telegram: " + e.message, "Erro");
+    jogos.forEach(j => {
+        const jogoId = `${j.jogador_a}_${j.jogador_b}`;
+        const somaGols = j.total_gols;
+        
+        // Exibe a maior linha calculada pelo Python no painel (desde que seja válida >= 80%)
+        const htmlGatilho = j.valido_para_entrada
+            ? `<div class="live-metric-item"><span style="color: var(--text-muted);">Gatilho Preditivo:</span><span style="font-weight: 700; color: #10b981;">🔥 Over ${j.meta_sugerida} FT Recomendado (${j.score}%)</span></div>`
+            : `<div class="live-metric-item"><span style="color: var(--text-muted);">Gatilho Preditivo:</span><span style="font-weight: 600; color: #ef4444;">❌ Não é recomendado fazer entrada (< 80%)</span></div>`;
+
+        const valorLinha = j.linha_aberta_bet || j.linha || j.linha_bet || "";
+
+        const htmlLinhaBet = valorLinha 
+            ? `<div class="live-metric-item"><span style="color: var(--text-muted);">Linha Bet365:</span><span style="font-weight: 700; color: #f59e0b;">${valorLinha}</span></div>` 
+            : '';
+
+        const htmlConteudo = `
+            <div class="live-match-top">
+                <span style="font-weight: 700; color: var(--accent);">${j.liga || 'FIFA GT Leagues'}</span>
+                <div class="live-clock"><span class="pulse-dot"></span><span>${j.tempo || 'Ao Vivo'}</span></div>
+            </div>
+            <div class="live-teams-row">
+                <div class="live-team-col"><span class="live-player-title">${j.jogador_a}</span><span class="live-subteam">${j.time_a || 'Time A'}</span></div>
+                <div class="live-score-box">${j.placar_a} x ${j.placar_b}</div>
+                <div class="live-team-col" style="text-align: right;"><span class="live-player-title">${j.jogador_b}</span><span class="live-subteam">${j.time_b || 'Time B'}</span></div>
+            </div>
+            <div class="live-metrics-box">
+                <div class="live-metric-item"><span style="color: var(--text-muted);">Gols no Momento:</span><span style="font-weight: 800; color: #38bdf8;">${somaGols} gol${somaGols === 1 ? '' : 's'}</span></div>
+                ${htmlLinhaBet}
+                ${htmlGatilho}
+            </div>
+            <button class="btn-carregar-h2h" onclick="carregarNoH2H('${j.jogador_a}', '${j.jogador_b}')">
+                <span>⚡ Analisar Histórico Completo H2H</span>
+            </button>
+        `;
+
+        let cardDiv = grid.querySelector(`[data-id="${jogoId}"]`);
+        if (cardDiv) {
+            cardDiv.innerHTML = htmlConteudo;
+        } else {
+            const novoCard = document.createElement('div');
+            novoCard.className = 'live-match-card';
+            novoCard.setAttribute('data-id', jogoId);
+            novoCard.innerHTML = htmlConteudo;
+            grid.appendChild(novoCard);
         }
-    }
-</script>
+    });
+}
 
+function carregarNoH2H(jogadorA, jogadorB) {
+    trocarAba('h2h');
+    document.getElementById('jogadorA').value = jogadorA;
+    document.getElementById('jogadorB').value = jogadorB;
+    analisar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 </body>
 </html>
