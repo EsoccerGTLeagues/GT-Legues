@@ -822,14 +822,10 @@
 <!-- Navegação de Abas 
     <div class="tabs-nav">
         <button id="tab-h2h-btn" class="tab-btn active" onclick="trocarAba('h2h')">
-            <span>🎯</span> Analisador de Confrontos H2H
+            <span>🎯</span> Analisador de Confrontos
         </button>
-        <button id="tab-live-btn" class="tab-btn live" onclick="trocarAba('live')">
-            <span class="pulse-dot"></span> Radar Ao Vivo (Bet365 9222)
-        </button>
-        <button id="tab-script-btn" class="tab-btn" onclick="trocarAba('script')">
-            <span>🤖</span> Script Python & Guia
-        </button>
+        
+        
     </div>
 -->
     <!-- ABA 1: H2H -->
@@ -911,69 +907,14 @@
         <div id="resultado" class="stats"></div>
     </div>
 
-    <!-- ABA 2: RADAR AO VIVO -->
-    <div id="aba-live" class="hidden">
-        <div class="live-dashboard-header">
-            <div>
-                <div id="live-bot-status" class="live-status-pill">
-                    <span class="pulse-dot"></span>
-                    <span id="live-bot-status-text">Conectando ao Robô Python (Porta 5000 / 9222)...</span>
-                </div>
-                <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">
-                    Monitorando Bet365 com refresh automático de 1 minuto para evitar travamento de vozes e atualizar partidas.
-                </p>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <div class="refresh-timer-badge">
-                    <span>⏱️ Refresh em:</span>
-                    <span id="contador-refresh-segundos" style="font-size: 14px; font-weight: 800;">60s</span>
-                </div>
-                <button class="btn-header" onclick="buscarJogosAoVivo(true)" style="border-color: var(--accent);">
-                    🔄 Forçar Atualização
-                </button>
-            </div>
-        </div>
-
+    
         <div id="lista-jogos-aovivo" class="live-matches-grid"></div>
     </div>
 
-    <!-- ABA 3: SCRIPT PYTHON GUIA -->
-    <div id="aba-script" class="hidden">
-        <div class="script-guide-box">
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--accent); margin-bottom: 8px;">
-                🚀 Como Rodar o Robô Coletor Bet365 (Porta 9222 + Refresh 1 Minuto)
-            </h3>
-            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 18px;">
-                Siga os 3 passos simples abaixo para coletar as partidas ao vivo sem ser bloqueado pela Bet365 e sem travar as transmissões de voz:
-            </p>
 
-            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 14px;">
-                Passo 1: Abrir o Google Chrome com a porta 9222 aberta
-            </h4>
-            <div class="code-snippet">
-chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome_debug_profile"
-            </div>
-
-            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 18px;">
-                Passo 2: Instalar as dependências do Python
-            </h4>
-            <div class="code-snippet">
-pip install selenium webdriver-manager flask flask-cors requests
-            </div>
-
-            <h4 style="font-size: 14px; font-weight: 700; color: #38bdf8; margin-top: 18px;">
-                Passo 3: Iniciar o Script do Robô
-            </h4>
-            <div class="code-snippet">
-python bot_live_bet365.py
-            </div>
-        </div>
-    </div>
-</div>
 
 <footer>
-    <p>© 2026 GT Scanner 12 Minutos - Analisador e Radar Preditivo.</p>
+    <p>© 2026 GT Scanner 12 Minutos - Analisador de confrontos.</p>
     <p style="margin-top: 8px;">
         <a href="#" onclick="event.preventDefault(); abrirModalInfo('termos')">Termos de Uso</a> &nbsp;|&nbsp; 
         <a href="#" onclick="event.preventDefault(); abrirModalInfo('privacidade')">Política de Privacidade</a> &nbsp;|&nbsp;
@@ -1276,7 +1217,7 @@ python bot_live_bet365.py
             scoresLinhas.push({ linha: `Over ${meta} Gols`, meta, score });
         }
 
-        let melhorLinha = scoresLinhas.filter(s => s.score >= 75).pop() || scoresLinhas[0];
+        let melhorLinha = scoresLinhas.filter(s => s.score >= 80).pop() || scoresLinhas[0];
         document.getElementById('badge-melhor-mercado').innerHTML = `🏆 Top Pick: <b>${melhorLinha.linha} (${melhorLinha.score.toFixed(0)}% Score)</b>`;
 
         const pctAmbas = total > 0 ? (ambasMarcamCount / total) * 100 : 0;
@@ -1302,26 +1243,26 @@ python bot_live_bet365.py
                 </div>
             </div>
 
-            <div class="card-destaque-assertivo ${pctAmbas >= 70 ? 'ouro' : 'prata'}">
-                <span class="badge-assertividade-tag ${pctAmbas >= 70 ? 'tag-ouro' : 'tag-prata'}">
-                    ${pctAmbas >= 70 ? '⚽ TENDÊNCIA DE AMBAS' : '📊 MERCADO REGULAR'}
+            <div class="card-destaque-assertivo ${pctAmbas >= 80 ? 'ouro' : 'prata'}">
+                <span class="badge-assertividade-tag ${pctAmbas >= 80 ? 'tag-ouro' : 'tag-prata'}">
+                    ${pctAmbas >= 80 ? '⚽ TENDÊNCIA DE AMBAS' : '📊 MERCADO REGULAR'}
                 </span>
                 <div>
                     <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Ambas Equipes Marcam</div>
                     <div style="font-size: 22px; font-weight: 800; margin: 2px 0;">
                         ${pctAmbas >= 50 ? 'Ambas SIM' : 'Ambas NÃO'}
                     </div>
-                    <div style="font-size: 12px; color: ${pctAmbas >= 70 ? '#10b981' : '#f59e0b'}; font-weight: 700;">
+                    <div style="font-size: 12px; color: ${pctAmbas >= 80 ? '#10b981' : '#f59e0b'}; font-weight: 700;">
                         Frequência Histórica: ${pctAmbas.toFixed(0)}% (${ambasMarcamCount}/${total} jogos)
                     </div>
                 </div>
                 <div class="stat-progress-bar">
-                    <div class="stat-progress-fill" style="background: ${pctAmbas >= 70 ? '#10b981' : '#f59e0b'}; width: ${pctAmbas}%;"></div>
+                    <div class="stat-progress-fill" style="background: ${pctAmbas >= 80 ? '#10b981' : '#f59e0b'}; width: ${pctAmbas}%;"></div>
                 </div>
             </div>
 
             <div class="card-destaque-assertivo prata">
-                <span class="badge-assertividade-tag tag-prata">👑 TENDÊNCIA H2H</span>
+                <span class="badge-assertividade-tag tag-prata">👑 TENDÊNCIA </span>
                 <div>
                     <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Dominância no H2H</div>
                     <div style="font-size: 20px; font-weight: 800; margin: 2px 0;">
@@ -1386,8 +1327,8 @@ python bot_live_bet365.py
             ${renderVipStat('Gols Sofridos ' + B, golsSofridosB)}
             <div class="grid-columns">
                 <div class="grid-column-box"><h3>⚽ OVER GOLS NO JOGO</h3>${counts.jogo.map((c, i) => renderBar(historicoGolsJogo, total, (i+0.5)+' Gols', i)).join('')}</div>
-                <div class="grid-column-box"><h3>👤 JOGADOR ${A}</h3>${counts.jogA.map((c, i) => renderBar(historicoGolsJogA, total, (i+0.5)+' Gols', i)).join('')}</div>
-                <div class="grid-column-box"><h3>👤 JOGADOR ${B}</h3>${counts.jogB.map((c, i) => renderBar(historicoGolsJogB, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR - ${A}</h3>${counts.jogA.map((c, i) => renderBar(historicoGolsJogA, total, (i+0.5)+' Gols', i)).join('')}</div>
+                <div class="grid-column-box"><h3>👤 JOGADOR - ${B}</h3>${counts.jogB.map((c, i) => renderBar(historicoGolsJogB, total, (i+0.5)+' Gols', i)).join('')}</div>
             </div>
         `;
     }
@@ -1431,110 +1372,6 @@ python bot_live_bet365.py
         });
     }
 
-// Monitoramento Ao Vivo
-let segundosRestantesRefresh = 60;
-
-function iniciarMonitoramentoAoVivo() {
-    buscarJogosAoVivo();
-    if (!timerAoVivoInterval) {
-        timerAoVivoInterval = setInterval(() => {
-            segundosRestantesRefresh--;
-            if (segundosRestantesRefresh <= 0) {
-                segundosRestantesRefresh = 60;
-                buscarJogosAoVivo();
-            }
-            const elem = document.getElementById('contador-refresh-segundos');
-            if (elem) elem.innerText = `${segundosRestantesRefresh}s`;
-        }, 1000);
-    }
-}
-
-async function buscarJogosAoVivo() {
-    const statusPill = document.getElementById('live-bot-status');
-    const statusText = document.getElementById('live-bot-status-text');
-
-    try {
-        const resp = await fetch('http://127.0.0.1:5000/api/aovivo');
-        if (resp.ok) {
-            const dados = await resp.json();
-            statusPill.className = 'live-status-pill';
-            statusText.innerText = `Robô Python Online (${dados.total_jogos} jogos na Bet365)`;
-            
-            if (dados.proxima_analise_em !== undefined) {
-                segundosRestantesRefresh = dados.proxima_analise_em;
-            }
-            
-            renderizarJogosAoVivo(dados.jogos || []);
-            return;
-        }
-    } catch (e) {
-        statusPill.className = 'live-status-pill offline';
-        statusText.innerText = 'Robô Python Offline (Aguardando bot_live_bet365.py na porta 9222)';
-    }
-}
-
-function renderizarJogosAoVivo(jogos) {
-    const grid = document.getElementById('lista-jogos-aovivo');
-    
-    if (!jogos || jogos.length === 0) {
-        grid.innerHTML = '<div class="card" style="grid-column: 1/-1; text-align: center; padding: 36px;"><p>Aguardando partidas ativas na Bet365.</p></div>';
-        return;
-    }
-
-    const idsAtivos = new Set(jogos.map(j => `${j.jogador_a}_${j.jogador_b}`));
-
-    grid.querySelectorAll('.live-match-card').forEach(card => {
-        const idCard = card.getAttribute('data-id');
-        if (idCard && !idsAtivos.has(idCard)) card.remove();
-    });
-
-    jogos.forEach(j => {
-        const jogoId = `${j.jogador_a}_${j.jogador_b}`;
-        const somaGols = j.total_gols;
-        
-        // Exibe a maior linha calculada pelo Python no painel (desde que seja válida >= 80%)
-        const htmlGatilho = j.valido_para_entrada
-            ? `<div class="live-metric-item"><span style="color: var(--text-muted);">Gatilho Preditivo:</span><span style="font-weight: 700; color: #10b981;">🔥 Over ${j.meta_sugerida} FT Recomendado (${j.score}%)</span></div>`
-            : `<div class="live-metric-item"><span style="color: var(--text-muted);">Gatilho Preditivo:</span><span style="font-weight: 600; color: #ef4444;">❌ Não é recomendado fazer entrada (< 80%)</span></div>`;
-
-        const valorLinha = j.linha_aberta_bet || j.linha || j.linha_bet || "";
-
-        const htmlLinhaBet = valorLinha 
-            ? `<div class="live-metric-item"><span style="color: var(--text-muted);">Linha Bet365:</span><span style="font-weight: 700; color: #f59e0b;">${valorLinha}</span></div>` 
-            : '';
-
-        const htmlConteudo = `
-            <div class="live-match-top">
-                <span style="font-weight: 700; color: var(--accent);">${j.liga || 'FIFA GT Leagues'}</span>
-                <div class="live-clock"><span class="pulse-dot"></span><span>${j.tempo || 'Ao Vivo'}</span></div>
-            </div>
-            <div class="live-teams-row">
-                <div class="live-team-col"><span class="live-player-title">${j.jogador_a}</span><span class="live-subteam">${j.time_a || 'Time A'}</span></div>
-                <div class="live-score-box">${j.placar_a} x ${j.placar_b}</div>
-                <div class="live-team-col" style="text-align: right;"><span class="live-player-title">${j.jogador_b}</span><span class="live-subteam">${j.time_b || 'Time B'}</span></div>
-            </div>
-            <div class="live-metrics-box">
-                <div class="live-metric-item"><span style="color: var(--text-muted);">Gols no Momento:</span><span style="font-weight: 800; color: #38bdf8;">${somaGols} gol${somaGols === 1 ? '' : 's'}</span></div>
-                ${htmlLinhaBet}
-                ${htmlGatilho}
-            </div>
-            <button class="btn-carregar-h2h" onclick="carregarNoH2H('${j.jogador_a}', '${j.jogador_b}')">
-                <span>⚡ Analisar Histórico Completo H2H</span>
-            </button>
-        `;
-
-        let cardDiv = grid.querySelector(`[data-id="${jogoId}"]`);
-        if (cardDiv) {
-            cardDiv.innerHTML = htmlConteudo;
-        } else {
-            const novoCard = document.createElement('div');
-            novoCard.className = 'live-match-card';
-            novoCard.setAttribute('data-id', jogoId);
-            novoCard.innerHTML = htmlConteudo;
-            grid.appendChild(novoCard);
-        }
-    });
-}
 
 function carregarNoH2H(jogadorA, jogadorB) {
     trocarAba('h2h');
