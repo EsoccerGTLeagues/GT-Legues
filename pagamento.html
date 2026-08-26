@@ -3,70 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner 8 Minutos — Pagamento VIP</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo.png">
+    <title>GT Scanner - Assinatura VIP</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS -->
+    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #090d16;
-            --card-bg: rgba(18, 24, 38, 0.95);
-            --input-bg: #141c2e;
-            --input-border: #243048;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --brand-orange: #ff8c00;
-            --brand-orange-hover: #ffa126;
-            --brand-orange-glow: rgba(255, 140, 0, 0.25);
-            --accent-green: #10b981;
-            --accent-green-hover: #059669;
-            --danger: #ef4444;
-            --radius-card: 20px;
-            --radius-input: 12px;
+            --bg-primary: #0d1117;
+            --bg-card: #161b22;
+            --bg-input: #0d1117;
+            --border-subtle: #30363d;
+            --border-highlight: #ff8c00;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-orange: #ff8c00;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-blue: #58a6ff;
+            --danger: #f85149;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255, 140, 0, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, #0d1322 0%, #070a12 100%);
+            background-color: var(--bg-primary);
             color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 24px 16px;
+            background-image: 
+                radial-gradient(circle at top center, rgba(255, 140, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at bottom center, rgba(35, 134, 54, 0.05) 0%, transparent 50%);
         }
 
         .payment-wrapper {
             width: 100%;
             max-width: 440px;
-            position: relative;
         }
 
         .payment-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background-color: var(--bg-card);
             padding: 32px 28px;
-            border-radius: var(--radius-card);
+            border-radius: 20px;
+            width: 100%;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 140, 0, 0.15);
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 140, 0, 0.35);
             position: relative;
             overflow: hidden;
         }
@@ -77,121 +69,125 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff8c00, #10b981, #ff8c00);
-            background-size: 200% 100%;
-            animation: moveGradient 4s linear infinite;
-        }
-
-        @keyframes moveGradient {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 200% 0%; }
+            height: 4px;
+            background: linear-gradient(90deg, #ff8c00, #ffaa40, #2ea043);
         }
 
         .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .logo-imagem {
             max-width: 240px;
             width: 100%;
             height: auto;
-            border-radius: 8px;
             display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
         }
 
         .badge-vip {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 140, 0, 0.15);
-            color: var(--brand-orange);
+            background: rgba(255, 140, 0, 0.12);
+            color: var(--accent-orange);
             border: 1px solid rgba(255, 140, 0, 0.3);
             padding: 4px 12px;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         h2 {
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .price-box {
-            background: linear-gradient(180deg, rgba(255, 140, 0, 0.1) 0%, rgba(255, 140, 0, 0.03) 100%);
-            border: 1px solid rgba(255, 140, 0, 0.25);
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
             padding: 12px 16px;
-            border-radius: 14px;
-            margin: 12px 0 16px 0;
+            margin-bottom: 16px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: baseline;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .price-title {
-            text-align: left;
-        }
-
-        .price-title span {
-            display: block;
-            font-size: 0.8rem;
+        .price-label {
             color: var(--text-muted);
-        }
-
-        .price-title strong {
-            font-size: 0.95rem;
-            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .price-value {
-            font-size: 1.35rem;
+            color: var(--accent-orange);
+            font-size: 26px;
             font-weight: 800;
-            color: var(--brand-orange);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.5px;
         }
 
-        .price-value small {
-            font-size: 0.75rem;
-            font-weight: 500;
+        .price-period {
             color: var(--text-muted);
+            font-size: 13px;
         }
 
-        .notice-banner {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px dashed rgba(16, 185, 129, 0.3);
+        .benefits-list {
+            text-align: left;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             padding: 10px 14px;
-            font-size: 0.78rem;
-            color: #a7f3d0;
-            line-height: 1.4;
-            margin-bottom: 20px;
-            text-align: left;
+            font-size: 12.5px;
+            color: #c9d1d9;
             display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
             gap: 8px;
-            align-items: flex-start;
+        }
+
+        .benefit-item span.icon {
+            color: #2ea043;
+            font-weight: bold;
+        }
+
+        .notice-box {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            background: rgba(255, 140, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-orange);
+            text-align: left;
         }
 
         .form-group {
             text-align: left;
             margin-bottom: 14px;
-            position: relative;
         }
 
         label {
             display: block;
             margin-bottom: 6px;
-            font-size: 0.82rem;
+            font-size: 13px;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #c9d1d9;
         }
 
         .input-wrapper {
@@ -201,44 +197,38 @@
         input {
             width: 100%;
             padding: 12px 14px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: var(--radius-input);
-            color: #ffffff;
-            font-size: 0.92rem;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            color: #f0f6fc;
+            font-size: 14px;
+            font-family: inherit;
             transition: all 0.2s ease;
-        }
-
-        input::placeholder {
-            color: #64748b;
         }
 
         input:focus {
             outline: none;
-            border-color: var(--brand-orange);
-            box-shadow: 0 0 0 3px var(--brand-orange-glow);
-            background-color: #182238;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+            background-color: #12171f;
         }
 
-        .form-hint {
-            font-size: 0.72rem;
-            color: #64748b;
-            margin-top: 4px;
-            display: block;
+        input::placeholder {
+            color: #484f58;
         }
 
         #btn-pagar {
             width: 100%;
-            padding: 15px;
-            background: #334155;
-            color: #94a3b8;
-            border: none;
-            border-radius: var(--radius-input);
+            padding: 14px;
+            background-color: #21262d;
+            color: #8b949e;
+            border: 1px solid #30363d;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 15px;
             cursor: not-allowed;
-            margin-top: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -246,15 +236,17 @@
         }
 
         #btn-pagar.active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
             color: #ffffff;
+            border: none;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 4px 14px rgba(35, 134, 54, 0.4);
         }
 
         #btn-pagar.active:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(16, 185, 129, 0.45);
+            background: linear-gradient(135deg, #2ea043 0%, #3fb950 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(35, 134, 54, 0.5);
         }
 
         #btn-pagar.active:active {
@@ -263,94 +255,75 @@
 
         .security-footer {
             margin-top: 20px;
-            font-size: 0.75rem;
-            color: #64748b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .security-badges {
+            font-size: 12px;
+            color: #8b949e;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            color: #94a3b8;
-            font-size: 0.72rem;
+            gap: 6px;
         }
 
-        .security-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .back-link {
-            display: inline-block;
+        .footer-links {
             margin-top: 16px;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            text-decoration: none;
-            transition: color 0.2s;
+            font-size: 12px;
+            color: #8b949e;
         }
 
-        .back-link:hover {
-            color: var(--brand-orange);
+        .footer-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
             text-decoration: underline;
         }
 
-        /* Toast / Alert Modal */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1e293b;
-            border: 1px solid #ef4444;
-            color: #ffffff;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-            z-index: 9999;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
+        /* Toast / Notification */
+        #alert-box {
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: left;
+            border: 1px solid var(--danger);
+            background: rgba(248, 81, 73, 0.1);
+            color: #ff7b72;
         }
     </style>
-<script src="/_aistudio-iframe.js?v=2f1c016a"></script></head>
+</head>
 <body>
 
 <div class="payment-wrapper">
     <div class="payment-card">
         <div class="logo-container">
-            <img src="logo.png" alt="Scanner 8 Minutos" class="logo-imagem">
+            <img src="logo.png" alt="GT Scanner 8 Minutos" class="logo-imagem" onerror="this.src='https://via.placeholder.com/280x100/161b22/ff8c00?text=GT+SCANNER'">
         </div>
-
-        <div class="badge-vip">✨ Acesso Ilimitado</div>
-        <h2>Assinatura VIP</h2>
+        
+        <div class="badge-vip">★ ACESSO VIP EXCLUSIVO</div>
+        <h2>Assinatura Mensal</h2>
         
         <div class="price-box">
-            <div class="price-title">
-                <strong>Plano Mensal</strong>
-                <span>Renovação a cada 30 dias</span>
-            </div>
-            <div class="price-value">
-                R$ 39,90 <small>/mês</small>
-            </div>
+            <span class="price-label">Plano 30 dias:</span>
+            <span class="price-value">R$ 34,90</span>
+            <span class="price-period">/mês</span>
         </div>
 
-        <div class="notice-banner">
-            <span>⚡</span>
-            <div>Após o pagamento, o acesso VIP completo será liberado automaticamente em até 10 minutos.</div>
+        <div class="benefits-list">
+            <div class="benefit-item"><span class="icon">✓</span> Análise irrestrita de todas as linhas de Over Gols (0.5 a 7.5)</div>
+            <div class="benefit-item"><span class="icon">✓</span> Sugestões inteligentes da I.A com cálculo de Score</div>
+            <div class="benefit-item"><span class="icon">✓</span> Médias de gols feitas/sofridas por jogador e confronto</div>
+            <div class="benefit-item"><span class="icon">✓</span> Atualização contínua das estatísticas GT Leagues</div>
         </div>
 
-        <form id="paymentForm" onsubmit="event.preventDefault(); realizarPagamento();">
+        <div class="notice-box">
+            💡 <b>Aviso:</b> Após a confirmação do pagamento, seu acesso total será liberado no mesmo e-mail cadastrado em até 30 minutos (geralmente imediato).
+        </div>
+
+        <div id="alert-box"></div>
+
+        <form id="paymentForm">
             <div class="form-group">
                 <label for="nome">Nome Completo</label>
                 <input type="text" id="nome" placeholder="Digite seu nome completo" maxlength="60" required autocomplete="name">
@@ -358,64 +331,58 @@
 
             <div class="form-group">
                 <label for="cpf">CPF (apenas números)</label>
-                <input type="text" id="cpf" placeholder="00000000000" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required inputmode="numeric">
-                <span class="form-hint">11 dígitos sem pontos ou traços</span>
+                <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required inputmode="numeric">
             </div>
 
             <div class="form-group">
-                <label for="email">E-mail Cadastrado</label>
+                <label for="email">E-mail (mesmo utilizado no cadastro)</label>
                 <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
-                <span class="form-hint">Deve ser o mesmo e-mail do seu cadastro no sistema</span>
             </div>
 
             <div class="form-group">
-                <label for="telefone">WhatsApp / Telefone (com DDD)</label>
+                <label for="telefone">Telefone / WhatsApp (com DDD)</label>
                 <input type="tel" id="telefone" placeholder="11999999999" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required inputmode="numeric">
-                <span class="form-hint">DDD + 9 dígitos (ex: 11987654321)</span>
             </div>
 
-            <button type="submit" id="btn-pagar" disabled>
+            <button type="button" id="btn-pagar" disabled onclick="realizarPagamento()">
                 <span>Pagar via Mercado Pago</span>
             </button>
         </form>
 
         <div class="security-footer">
-            <div class="security-badges">
-                <div class="security-item">🔒 Conexão Criptografada SSL</div>
-                <div class="security-item">💳 Mercado Pago</div>
-            </div>
-            <div>Pagamento 100% seguro com liberação rápida</div>
-            <a href="index.html" class="back-link">← Voltar para o Analisador</a>
+            <span>🔒</span> Pagamento 100% seguro via <b>Mercado Pago</b>
+        </div>
+
+        <div class="footer-links">
+            <a href="index.html">← Voltar para o Analisador</a> &nbsp;|&nbsp; 
+            Suporte: <a href="https://t.me/SGEEstoqly" target="_blank">@SGEEstoqly</a>
         </div>
     </div>
 </div>
 
-<div id="toast" class="toast"></div>
-
 <script>
     // 1. Configurações Supabase
     const supabaseUrl = 'https://afezbragrjyovmgwjmeq.supabase.co';
-    const supabaseAnonKey = 'sb_publishable_FICkQvqGT4az5kAmUnpLww_oKlVLlqD';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmZXpicmFncmp5b3ZtZ3dqbWVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTAzNDksImV4cCI6MjEwMDU2NjM0OX0.qIv5Fv99sjW5rTCw6MJGLMAPcgHPyevw9aYAc64Hdl4';
 
-    // 2. Inicialização Supabase
+    // 2. Inicialização segura do cliente Supabase
     const { createClient } = supabase;
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
     const form = document.getElementById('paymentForm');
     const inputs = form.querySelectorAll('input');
     const btnPagar = document.getElementById('btn-pagar');
-    const toast = document.getElementById('toast');
+    const alertBox = document.getElementById('alert-box');
 
-    function showNotification(msg, isError = true) {
-        toast.innerText = msg;
-        toast.style.borderColor = isError ? '#ef4444' : '#10b981';
-        toast.classList.add('show');
+    function showAlert(msg) {
+        alertBox.innerText = msg;
+        alertBox.style.display = 'block';
         setTimeout(() => {
-            toast.classList.remove('show');
-        }, 4000);
+            alertBox.style.display = 'none';
+        }, 5000);
     }
 
-    // 3. Validação em tempo real
+    // 3. Validação do formulário
     function validateForm() {
         let allFilled = true;
         inputs.forEach(input => {
@@ -433,7 +400,7 @@
         }
     }
 
-    // 4. Envio dos dados de pagamento e redirecionamento Mercado Pago
+    // 4. Processamento do pagamento
     async function realizarPagamento() {
         if (btnPagar.disabled) return;
 
@@ -445,27 +412,23 @@
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (nome.length < 3) {
-            showNotification("Por favor, digite seu nome completo.");
-            document.getElementById('nome').focus();
+            showAlert("Por favor, digite seu nome completo.");
             return;
         }
         if (cpf.length !== 11) {
-            showNotification("CPF inválido! O campo deve conter exatamente 11 números.");
-            document.getElementById('cpf').focus();
+            showAlert("CPF inválido! O campo deve conter exatamente 11 dígitos.");
             return;
         }
         if (!emailRegex.test(email)) {
-            showNotification("E-mail inválido! Certifique-se de incluir @ e o domínio.");
-            document.getElementById('email').focus();
+            showAlert("E-mail inválido! Certifique-se de incluir @ e o domínio (ex: .com, .br).");
             return;
         }
         if (telefone.length < 10 || telefone.length > 11) {
-            showNotification("Telefone inválido! Inclua o DDD + número (10 a 11 dígitos).");
-            document.getElementById('telefone').focus();
+            showAlert("Telefone inválido! Inclua o DDD + número (10 ou 11 dígitos).");
             return;
         }
 
-        btnPagar.innerHTML = '<span>Processando...</span>';
+        btnPagar.innerHTML = "<span>Salvando dados...</span>";
         btnPagar.disabled = true;
 
         try {
@@ -480,37 +443,32 @@
 
             if (error) {
                 console.error("Erro Supabase:", error);
-                showNotification("Erro ao salvar dados. Tente novamente.");
-                btnPagar.innerHTML = '<span>Pagar via Mercado Pago</span>';
+                showAlert("Erro ao salvar dados de pagamento. Tente novamente.");
+                btnPagar.innerHTML = "<span>Pagar via Mercado Pago</span>";
                 btnPagar.disabled = false;
             } else {
-                showNotification("Dados salvos com sucesso! Redirecionando...", false);
-                setTimeout(() => {
-                    window.location.href = "https://mpago.la/1gath2F";
-                }, 1000);
+                btnPagar.innerHTML = "<span>Redirecionando para Mercado Pago...</span>";
+                window.location.href = "https://mpago.la/1EcoLro";
             }
         } catch (err) {
             console.error("Erro inesperado:", err);
-            showNotification("Ocorreu um erro. Tente novamente.");
-            btnPagar.innerHTML = '<span>Pagar via Mercado Pago</span>';
+            showAlert("Ocorreu um erro na conexão. Tente novamente.");
+            btnPagar.innerHTML = "<span>Pagar via Mercado Pago</span>";
             btnPagar.disabled = false;
         }
     }
 
-    // 5. Listeners para validação contínua
+    // 5. Event listeners nos inputs
     inputs.forEach(input => {
         input.addEventListener('input', validateForm);
     });
 
-    // Auto-preencher email se passado na URL (ex: pagamento.html?email=teste@email.com)
-    window.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const emailParam = params.get('email');
-        if (emailParam) {
-            document.getElementById('email').value = emailParam;
-            validateForm();
-        }
-    });
+    // Pré-preenchimento opcional a partir de URL param se houver
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('email')) {
+        document.getElementById('email').value = urlParams.get('email');
+        validateForm();
+    }
 </script>
 
 </body>
